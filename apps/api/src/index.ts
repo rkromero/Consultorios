@@ -41,6 +41,13 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(port, () => {
+if (!process.env.DATABASE_URL) {
+    console.error('ERROR: DATABASE_URL is not defined');
+} else {
+    console.log('DATABASE_URL is defined');
+}
+
+app.listen(Number(port), '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
 });
