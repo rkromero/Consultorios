@@ -1,0 +1,26 @@
+{
+  "name": "clinica-saas",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:push": "npm run db:push -w packages/db",
+    "db:studio": "npm run db:studio -w packages/db"
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "latest",
+    "typescript": "latest"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "npm@10.0.0"
+}

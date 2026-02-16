@@ -1,0 +1,228 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- GLOBAL (Cross-Tenant) ---
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  fullName      String
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenants       TenantUser[]
+}
+
+// --- TENANT SCOPED ---
+
+model Tenant {
+  id            String    @id @default(uuid())
+  name          String
+  slug          String    @unique
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  users         TenantUser[]
+  sites         Site[]
+  patients      Patient[]
+  specialties   Specialty[]
+  schedule      Appointment[]
+  medicalNotes  MedicalNote[]
+  invoices      Invoice[]
+  
+  config        Json? 
+}
+
+enum Role {
+  ADMIN
+  RECEPTIONIST
+  COORDINATOR
+  PROFESSIONAL
+  PATIENT
+}
+
+model TenantUser {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  role          Role
+
+  professionalData Professional?
+
+  @@unique([tenantId, userId])
+}
+
+model Site {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  name        String
+  address     String?
+  phone       String?
+  active      Boolean  @default(true)
+  
+  boxes       Box[]
+  appointments Appointment[]
+}
+
+model Box {
+  id          String   @id @default(uuid())
+  siteId      String
+  site        Site     @relation(fields: [siteId], references: [id])
+  name        String
+  active      Boolean  @default(true)
+  
+  appointments Appointment[]
+}
+
+model Specialty {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  name        String
+  
+  professionals Professional[]
+}
+
+model Professional {
+  id            String      @id @default(uuid())
+  tenantUserId  String      @unique
+  tenantUser    TenantUser  @relation(fields: [tenantUserId], references: [id])
+  
+  specialtyId   String
+  specialty     Specialty   @relation(fields: [specialtyId], references: [id])
+  
+  licenseNumber String?
+  color         String?
+
+  appointments  Appointment[]
+  medicalNotes  MedicalNote[] // Notas que escribió
+}
+
+model Patient {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  
+  firstName     String
+  lastName      String
+  dni           String
+  birthDate     DateTime?
+  email         String?
+  phone         String?
+  address       String?
+  
+  healthInsurance String?
+  affiliateNumber String?
+
+  notes         String?
+
+  createdAt     DateTime @default(now())
+  
+  appointments  Appointment[]
+  medicalRecord MedicalNote[]
+  invoices      Invoice[]
+  
+  @@unique([tenantId, dni])
+}
+
+enum AppointmentStatus {
+  RESERVED
+  CONFIRMED
+  ATTENDED
+  ABSENT
+  CANCELLED
+}
+
+enum AppointmentType {
+  IN_PERSON
+  VIRTUAL
+}
+
+model Appointment {
+  id              String            @id @default(uuid())
+  tenantId        String
+  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  
+  siteId          String
+  site            Site              @relation(fields: [siteId], references: [id])
+  
+  boxId           String?
+  box             Box?              @relation(fields: [boxId], references: [id])
+  
+  professionalId  String
+  professional    Professional      @relation(fields: [professionalId], references: [id])
+  
+  patientId       String
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  
+  startTime       DateTime
+  endTime         DateTime
+  
+  type            AppointmentType
+  status          AppointmentStatus @default(RESERVED)
+  
+  notes           String?
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@index([tenantId, professionalId, startTime, endTime])
+  @@index([tenantId, boxId, startTime, endTime])
+}
+
+model MedicalNote {
+  id              String        @id @default(uuid())
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id])
+  
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id])
+  
+  authorId        String // Professional ID de quien escribe
+  author          Professional  @relation(fields: [authorId], references: [id])
+  
+  content         String
+  date            DateTime      @default(now())
+  
+  attachments     Attachment[]
+}
+
+model Attachment {
+  id              String      @id @default(uuid())
+  medicalNoteId   String
+  medicalNote     MedicalNote @relation(fields: [medicalNoteId], references: [id])
+  
+  url             String
+  filename        String
+  mimeType        String
+  size            Int
+}
+
+model Invoice {
+  id              String      @id @default(uuid())
+  tenantId        String
+  tenant          Tenant      @relation(fields: [tenantId], references: [id])
+  
+  patientId       String
+  patient         Patient     @relation(fields: [patientId], references: [id])
+  
+  amount          Decimal
+  concept         String
+  status          String      // PENDING, PAID, CANCELLED
+  paymentMethod   String?
+  
+  createdAt       DateTime    @default(now())
+}
