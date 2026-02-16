@@ -1,5 +1,7 @@
 FROM node:18-alpine AS builder
 
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -18,6 +20,8 @@ RUN npm run build -w apps/web
 RUN npm run build -w apps/api
 
 FROM node:18-alpine
+
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
