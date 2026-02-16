@@ -1,0 +1,19 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "target": "es2019",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "outDir": "dist",
+        "sourceMap": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "."
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}
