@@ -13,6 +13,7 @@ COPY . .
 
 RUN npx prisma generate --schema=./packages/db/prisma/schema.prisma
 
+RUN npm run build -w packages/db
 RUN npm run build -w apps/web
 RUN npm run build -w apps/api
 
