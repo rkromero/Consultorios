@@ -45,7 +45,7 @@ export default function DashboardLayout() {
     }
 
     const navItems = [
-        { to: "/dashboard", label: "Panel de Control", icon: LayoutGrid, end: true },
+        { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, end: true },
         { to: "/dashboard/agenda", label: "Agenda General", icon: Calendar },
         { to: "/dashboard/pacientes", label: "Directorio Pacientes", icon: Users },
         { to: "/dashboard/profesionales", label: "Profesionales", icon: Stethoscope },

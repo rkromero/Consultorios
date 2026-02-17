@@ -16,6 +16,7 @@ import AgendaPage from './pages/AgendaPage';
 import PatientDetailsPage from './pages/PatientDetailsPage';
 import InvoicesPage from './pages/InvoicesPage';
 import CollectionsPage from './pages/CollectionsPage';
+import DashboardPage from './pages/DashboardPage';
 import { useAuthStore } from './stores/auth.store';
 
 const queryClient = new QueryClient();
@@ -44,7 +45,7 @@ function App() {
                             <DashboardLayout />
                         </ProtectedRoute>
                     }>
-                        <Route index element={<div className="p-6"><h1>Bienvenido al Dashboard</h1></div>} />
+                        <Route index element={<DashboardPage />} />
                         <Route path="agenda" element={<AgendaPage />} />
                         <Route path="pacientes" element={<PatientsPage />} />
                         <Route path="pacientes/:id" element={<PatientDetailsPage />} />
