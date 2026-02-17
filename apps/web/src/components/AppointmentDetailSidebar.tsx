@@ -325,36 +325,36 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
                         </div>
                     )}
 
-                    {/* Confirm Release Dialog */}
-                    {showConfirmRelease && (
-                        <div className="p-5 bg-rose-50 border-2 border-rose-200 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-                            <p className="text-sm font-bold text-rose-800 mb-1">¿Liberar este turno?</p>
-                            <p className="text-xs text-rose-600 mb-4">
-                                Esta acción cancelará el turno y liberará el horario. No se puede deshacer.
-                            </p>
+                </div>
+
+                {/* Footer Actions */}
+                <div className="p-6 border-t border-slate-100 shrink-0 bg-white">
+                    {showConfirmRelease ? (
+                        <div className="space-y-3">
+                            <div className="p-4 bg-rose-50 border-2 border-rose-200 rounded-2xl">
+                                <p className="text-sm font-bold text-rose-800 mb-1">¿Liberar este turno?</p>
+                                <p className="text-xs text-rose-600">
+                                    Esta acción cancelará el turno y liberará el horario. No se puede deshacer.
+                                </p>
+                            </div>
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowConfirmRelease(false)}
-                                    className="flex-1 py-2.5 text-xs font-bold text-slate-500 hover:bg-white rounded-xl transition-all"
+                                    className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition-all"
                                 >
                                     No, volver
                                 </button>
                                 <button
                                     onClick={handleRelease}
                                     disabled={isPending}
-                                    className="flex-1 py-2.5 text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-all flex items-center justify-center gap-2"
+                                    className="flex-1 py-3 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-all flex items-center justify-center gap-2"
                                 >
                                     {isPending ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                                     Sí, liberar
                                 </button>
                             </div>
                         </div>
-                    )}
-                </div>
-
-                {/* Footer Actions */}
-                <div className="p-6 border-t border-slate-100 space-y-3 shrink-0 bg-white">
-                    {isEditing ? (
+                    ) : isEditing ? (
                         <div className="flex gap-3">
                             <button
                                 onClick={cancelEdit}
@@ -376,7 +376,7 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
                             </button>
                         </div>
                     ) : (
-                        <>
+                        <div className="space-y-3">
                             <button
                                 onClick={startEdit}
                                 className="w-full btn-primary py-3 flex items-center justify-center gap-2"
@@ -394,7 +394,7 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
                                     Liberar Turno
                                 </button>
                             )}
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
