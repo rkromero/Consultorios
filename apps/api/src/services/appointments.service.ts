@@ -184,13 +184,23 @@ export class AppointmentService {
             }
         }
 
-        return prisma.appointment.update({
-            where: { id },
-            data: {
-                ...data,
-                startTime: data.startTime ? new Date(data.startTime) : undefined,
-                endTime: data.endTime ? new Date(data.endTime) : undefined
+        return prisma.$transaction(async (tx) => {
+            const updated = await tx.appointment.update({
+                where: { id },
+                data: {
+                    ...data,
+                    startTime: data.startTime ? new Date(data.startTime) : undefined,
+                    endTime: data.endTime ? new Date(data.endTime) : undefined
+                }
+            });
+
+            if (data.status === AppointmentStatus.CANCELLED) {
+                await tx.appointmentCollection.deleteMany({
+                    where: { appointmentId: id }
+                });
             }
+
+            return updated;
         });
     }
 }
