@@ -45,7 +45,8 @@ const statusColors: Record<AppointmentStatus, string> = {
 };
 
 export default function AppointmentDetailSidebar({ appointment, isOpen, onClose }: AppointmentDetailSidebarProps) {
-    const { role } = useAuthStore();
+    const { role, tenant, availableTenants } = useAuthStore();
+    const effectiveRole = role || availableTenants.find(t => t.id === tenant?.id)?.role || null;
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({
         status: AppointmentStatus.CONFIRMED as AppointmentStatus,
@@ -57,7 +58,7 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
 
     const { mutate: updateAppointment, isPending, error: serverError, reset: resetMutation } = useUpdateAppointment();
 
-    const canRelease = role === 'ADMIN' || role === 'COORDINATOR';
+    const canRelease = effectiveRole === 'ADMIN' || effectiveRole === 'COORDINATOR';
 
     useEffect(() => {
         if (!isOpen) {

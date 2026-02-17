@@ -10,6 +10,7 @@ interface User {
 interface Tenant {
     id: string;
     name: string;
+    role?: string;
 }
 
 interface AuthState {
