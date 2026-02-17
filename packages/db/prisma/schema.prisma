@@ -147,8 +147,8 @@ enum AppointmentStatus {
 }
 
 enum AppointmentType {
-  IN_PERSON
-  VIRTUAL
+  REGULAR
+  EVALUATION
 }
 
 model Appointment {

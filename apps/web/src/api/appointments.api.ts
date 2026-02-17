@@ -1,8 +1,8 @@
 import api from '../lib/axios';
 
 export enum AppointmentType {
-    IN_PERSON = 'IN_PERSON',
-    VIRTUAL = 'VIRTUAL',
+    REGULAR = 'REGULAR',
+    EVALUATION = 'EVALUATION',
 }
 
 export enum AppointmentStatus {
