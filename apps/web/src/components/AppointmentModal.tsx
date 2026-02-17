@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -10,11 +10,13 @@ import {
     Building2,
     FileText,
     Loader2,
-    AlertCircle
+    AlertCircle,
+    Stethoscope
 } from 'lucide-react';
 import { useAuthStore } from '../stores/auth.store';
 import { usePatients } from '../hooks/usePatients';
 import { useProfessionals } from '../hooks/useProfessionals';
+import { useSpecialties } from '../hooks/useSpecialties';
 import { useSites } from '../hooks/useSites';
 import { useCreateAppointment } from '../hooks/useAppointments';
 import { AppointmentType } from '../api/appointments.api';
@@ -22,6 +24,7 @@ import { Patient } from '../api/patients.api';
 import { format } from 'date-fns';
 
 const appointmentSchema = z.object({
+    specialtyId: z.string().min(1, "Debe seleccionar una especialidad"),
     patientId: z.string().min(1, "Debe seleccionar un paciente"),
     professionalId: z.string().min(1, "Debe seleccionar un profesional"),
     siteId: z.string().min(1, "Debe seleccionar una sede"),
@@ -43,24 +46,39 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
     const { selectedSiteId } = useAuthStore();
     const { data: patientsRes } = usePatients({ limit: 100 });
     const { data: professionals = [] } = useProfessionals();
+    const { data: specialties = [] } = useSpecialties();
     const { data: sites = [] } = useSites();
     const { mutate: createAppointment, isPending, error: serverError } = useCreateAppointment();
 
     const patients = (patientsRes as any)?.data || [];
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentForm>({
+    const { register, handleSubmit, formState: { errors }, reset, control, setValue } = useForm<AppointmentForm>({
         resolver: zodResolver(appointmentSchema),
         defaultValues: {
+            specialtyId: '',
             date: format(new Date(), 'yyyy-MM-dd'),
             duration: 45,
             siteId: selectedSiteId || ''
         }
     });
 
+    const selectedSpecialtyId = useWatch({ control, name: 'specialtyId' });
+
+    const filteredProfessionals = useMemo(() => {
+        if (!selectedSpecialtyId) return [];
+        return professionals.filter(p => p.specialtyId === selectedSpecialtyId);
+    }, [professionals, selectedSpecialtyId]);
+
+    // Reset professionalId when specialty changes
+    useEffect(() => {
+        setValue('professionalId', '');
+    }, [selectedSpecialtyId, setValue]);
+
     // Reset form when modal opens or selectedSiteId changes
     useEffect(() => {
         if (isOpen) {
             reset({
+                specialtyId: '',
                 patientId: '',
                 professionalId: '',
                 date: format(new Date(), 'yyyy-MM-dd'),
@@ -135,20 +153,43 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
                             {errors.patientId && <span className="text-rose-500 text-[10px] font-bold mt-2 block ml-1 uppercase tracking-wider">{errors.patientId.message}</span>}
                         </div>
 
-                        {/* Profesional */}
+                        {/* Especialidad */}
+                        <div>
+                            <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
+                                <Stethoscope size={14} className="text-indigo-500" /> Especialidad
+                            </label>
+                            <select
+                                {...register('specialtyId')}
+                                className="input-premium bg-slate-50 border-slate-100 hover:border-indigo-200 focus:bg-white transition-all"
+                            >
+                                <option value="">Seleccionar especialidad...</option>
+                                {specialties.map((s: any) => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                            {errors.specialtyId && <span className="text-rose-500 text-[10px] font-bold mt-2 block ml-1 uppercase tracking-wider">{errors.specialtyId.message}</span>}
+                        </div>
+
+                        {/* Profesional (filtrado por especialidad) */}
                         <div>
                             <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
                                 <User size={14} className="text-indigo-500" /> Profesional
                             </label>
                             <select
                                 {...register('professionalId')}
-                                className="input-premium bg-slate-50 border-slate-100 hover:border-indigo-200 focus:bg-white transition-all"
+                                disabled={!selectedSpecialtyId}
+                                className="input-premium bg-slate-50 border-slate-100 hover:border-indigo-200 focus:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <option value="">Seleccionar profesional...</option>
-                                {professionals.map(p => (
+                                <option value="">
+                                    {!selectedSpecialtyId ? 'Primero seleccione especialidad...' : 'Seleccionar profesional...'}
+                                </option>
+                                {filteredProfessionals.map(p => (
                                     <option key={p.id} value={p.id}>{p.tenantUser.user.fullName}</option>
                                 ))}
                             </select>
+                            {selectedSpecialtyId && filteredProfessionals.length === 0 && (
+                                <span className="text-amber-500 text-[10px] font-bold mt-2 block ml-1 uppercase tracking-wider">No hay profesionales para esta especialidad</span>
+                            )}
                             {errors.professionalId && <span className="text-rose-500 text-[10px] font-bold mt-2 block ml-1 uppercase tracking-wider">{errors.professionalId.message}</span>}
                         </div>
 
