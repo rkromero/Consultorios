@@ -39,4 +39,4 @@ COPY --from=builder /app/packages/db/prisma ./packages/db/prisma
 ENV PORT=3000
 EXPOSE 3000
 
-CMD ["npm", "start", "-w", "apps/api"]
+CMD npx prisma db push --schema=./packages/db/prisma/schema.prisma --skip-generate && npm start -w apps/api
