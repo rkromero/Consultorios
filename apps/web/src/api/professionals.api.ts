@@ -12,10 +12,12 @@ export interface Professional {
     };
     licenseNumber?: string;
     color?: string;
+    active: boolean;
 }
 
-export const getProfessionals = async (): Promise<Professional[]> => {
-    const { data } = await api.get('/professionals');
+export const getProfessionals = async (activeOnly?: boolean): Promise<Professional[]> => {
+    const params = activeOnly !== undefined ? { activeOnly: String(activeOnly) } : {};
+    const { data } = await api.get('/professionals', { params });
     return data;
 };
 
@@ -34,5 +36,10 @@ export const createProfessional = async (inputData: {
 
 export const updateProfessional = async (id: string, inputData: Partial<Professional>): Promise<Professional> => {
     const { data } = await api.put(`/professionals/${id}`, inputData);
+    return data;
+};
+
+export const toggleProfessionalActive = async (id: string): Promise<Professional> => {
+    const { data } = await api.patch(`/professionals/${id}/toggle-active`);
     return data;
 };

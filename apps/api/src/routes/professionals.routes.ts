@@ -12,5 +12,6 @@ router.get('/', ProfessionalController.getAll);
 router.get('/:id', ProfessionalController.getById);
 router.post('/', ProfessionalController.create);
 router.put('/:id', ProfessionalController.update);
+router.patch('/:id/toggle-active', ProfessionalController.toggleActive);
 
 export default router;

@@ -3,11 +3,17 @@ import bcrypt from 'bcryptjs';
 import { Role } from '@clinica/db';
 
 export class ProfessionalService {
-    async getAll(tenantId: string) {
+    async getAll(tenantId: string, activeOnly?: boolean) {
+        const where: any = {
+            tenantUser: { tenantId }
+        };
+
+        if (activeOnly !== undefined) {
+            where.active = activeOnly;
+        }
+
         return prisma.professional.findMany({
-            where: {
-                tenantUser: { tenantId }
-            },
+            where,
             include: {
                 specialty: true,
                 tenantUser: {
@@ -15,7 +21,11 @@ export class ProfessionalService {
                         user: true
                     }
                 }
-            }
+            },
+            orderBy: [
+                { active: 'desc' },
+                { tenantUser: { user: { fullName: 'asc' } } }
+            ]
         });
     }
 
@@ -49,7 +59,6 @@ export class ProfessionalService {
         const fullName = `${data.firstName} ${data.lastName}`;
 
         return prisma.$transaction(async (tx) => {
-            // 1. Create User
             const user = await tx.user.create({
                 data: {
                     email: data.email,
@@ -59,7 +68,6 @@ export class ProfessionalService {
                 }
             });
 
-            // 2. Create TenantUser
             const tenantUser = await tx.tenantUser.create({
                 data: {
                     tenantId,
@@ -68,7 +76,6 @@ export class ProfessionalService {
                 }
             });
 
-            // 3. Create Professional profile
             return tx.professional.create({
                 data: {
                     tenantUserId: tenantUser.id,
@@ -95,6 +102,23 @@ export class ProfessionalService {
             where: { id },
             data,
             include: { specialty: true }
+        });
+    }
+
+    async toggleActive(tenantId: string, id: string) {
+        const professional = await prisma.professional.findFirst({
+            where: { id, tenantUser: { tenantId } }
+        });
+
+        if (!professional) throw new Error('Profesional no encontrado');
+
+        return prisma.professional.update({
+            where: { id },
+            data: { active: !professional.active },
+            include: {
+                specialty: true,
+                tenantUser: { include: { user: true } }
+            }
         });
     }
 }

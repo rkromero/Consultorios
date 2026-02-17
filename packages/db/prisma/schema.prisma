@@ -108,6 +108,7 @@ model Professional {
   
   licenseNumber String?
   color         String?
+  active        Boolean     @default(true)
 
   appointments  Appointment[]
   medicalNotes  MedicalNote[] // Notas que escribió

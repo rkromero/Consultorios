@@ -45,7 +45,7 @@ interface AppointmentModalProps {
 export default function AppointmentModal({ isOpen, onClose, type }: AppointmentModalProps) {
     const { selectedSiteId } = useAuthStore();
     const { data: patientsRes } = usePatients({ limit: 100 });
-    const { data: professionals = [] } = useProfessionals();
+    const { data: professionals = [] } = useProfessionals(true);
     const { data: specialties = [] } = useSpecialties();
     const { data: sites = [] } = useSites();
     const { mutate: createAppointment, isPending, error: serverError } = useCreateAppointment();

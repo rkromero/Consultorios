@@ -34,7 +34,7 @@ export default function AgendaPage() {
     const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
 
-    const { data: professionals = [] } = useProfessionals();
+    const { data: professionals = [] } = useProfessionals(true);
 
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
     const weekEnd = addDays(weekStart, 4); // Mon to Fri
