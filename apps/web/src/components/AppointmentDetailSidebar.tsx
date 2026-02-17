@@ -15,7 +15,9 @@ import {
     AlertCircle,
     Phone,
     Stethoscope,
-    CheckCircle2
+    CheckCircle2,
+    UserCheck,
+    UserX
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Appointment, AppointmentType, AppointmentStatus } from '../api/appointments.api';
@@ -127,6 +129,14 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
                 setShowConfirmRelease(false);
                 onClose();
             }
+        });
+    };
+
+    const handleQuickStatus = (status: AppointmentStatus) => {
+        if (!appointment) return;
+        updateAppointment({
+            id: appointment.id,
+            data: { status }
         });
     };
 
@@ -319,6 +329,38 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
                             </p>
                         )}
                     </div>
+
+                    {/* Quick Status Buttons */}
+                    {!isEditing && appointment.status !== AppointmentStatus.CANCELLED && (
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleQuickStatus(AppointmentStatus.ATTENDED)}
+                                disabled={isPending || appointment.status === AppointmentStatus.ATTENDED}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                                    appointment.status === AppointmentStatus.ATTENDED
+                                        ? "bg-green-100 text-green-700 border-green-200 cursor-default"
+                                        : "text-green-600 border-green-200 hover:bg-green-50 active:bg-green-100"
+                                )}
+                            >
+                                <UserCheck size={15} />
+                                Asistió
+                            </button>
+                            <button
+                                onClick={() => handleQuickStatus(AppointmentStatus.ABSENT)}
+                                disabled={isPending || appointment.status === AppointmentStatus.ABSENT}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all border",
+                                    appointment.status === AppointmentStatus.ABSENT
+                                        ? "bg-rose-100 text-rose-700 border-rose-200 cursor-default"
+                                        : "text-rose-600 border-rose-200 hover:bg-rose-50 active:bg-rose-100"
+                                )}
+                            >
+                                <UserX size={15} />
+                                Ausente
+                            </button>
+                        </div>
+                    )}
 
                     {/* Server Error */}
                     {serverError && (
