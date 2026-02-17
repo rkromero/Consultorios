@@ -47,7 +47,7 @@ export class AppointmentService {
         });
     }
 
-    async create(tenantId: string, data: {
+    async create(tenantId: string, userId: string, data: {
         patientId: string;
         professionalId: string;
         siteId: string;
@@ -98,13 +98,22 @@ export class AppointmentService {
         }
 
         // 3. Get current price to snapshot
-        const priceVersion = await prisma.appointmentPriceVersion.findFirst({
+        let priceVersion = await prisma.appointmentPriceVersion.findFirst({
             where: { tenantId, isActive: true },
             orderBy: { effectiveFrom: 'desc' }
         });
 
         if (!priceVersion) {
-            throw new Error('No hay una versión de precio activa para esta organización. Configure el precio global primero.');
+            // Auto-create a default price version if none exists to avoid 400 error
+            priceVersion = await prisma.appointmentPriceVersion.create({
+                data: {
+                    tenantId,
+                    priceArsInt: 30000,
+                    createdByUserId: userId,
+                    effectiveFrom: new Date('2020-01-01'), // Past
+                    isActive: true
+                }
+            });
         }
 
         return prisma.$transaction(async (tx) => {

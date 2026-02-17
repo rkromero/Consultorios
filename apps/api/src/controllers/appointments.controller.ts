@@ -46,7 +46,7 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
     try {
-        const item = await service.create(req.tenantId!, req.body);
+        const item = await service.create(req.tenantId!, req.user!.id, req.body);
         res.status(201).json(item);
     } catch (error: any) {
         res.status(400).json({ message: error.message });
