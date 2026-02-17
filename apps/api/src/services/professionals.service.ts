@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma';
+import bcrypt from 'bcryptjs';
 import { Role } from '@clinica/db';
 
 export class ProfessionalService {
@@ -35,40 +36,39 @@ export class ProfessionalService {
         });
     }
 
-    async create(tenantId: string, data: { userId: string; specialtyId: string; licenseNumber?: string; color?: string }) {
-        // 1. Verify user belongs to tenant
-        const tenantUser = await prisma.tenantUser.findUnique({
-            where: {
-                tenantId_userId: {
-                    tenantId,
-                    userId: data.userId
-                }
-            }
-        });
-
-        if (!tenantUser) {
-            throw new Error('User does not belong to this tenant');
-        }
-
-        // 2. Check if already a professional
-        const existing = await prisma.professional.findUnique({
-            where: { tenantUserId: tenantUser.id }
-        });
-
-        if (existing) {
-            throw new Error('User is already a professional in this tenant');
-        }
-
-        // 3. Create professional profile (and upgrade role to PROFESSIONAL if needed? Maybe keep separate)
-        // For now we assume role management is separate or we auto-update role.
+    async create(tenantId: string, data: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone?: string;
+        specialtyId: string;
+        licenseNumber?: string;
+        color?: string
+    }) {
+        const hashedPassword = await bcrypt.hash('consultorio123', 10);
+        const fullName = `${data.firstName} ${data.lastName}`;
 
         return prisma.$transaction(async (tx) => {
-            // Optional: Update role
-            await tx.tenantUser.update({
-                where: { id: tenantUser.id },
-                data: { role: Role.PROFESSIONAL }
+            // 1. Create User
+            const user = await tx.user.create({
+                data: {
+                    email: data.email,
+                    passwordHash: hashedPassword,
+                    fullName: fullName,
+                    phone: data.phone,
+                }
             });
 
+            // 2. Create TenantUser
+            const tenantUser = await tx.tenantUser.create({
+                data: {
+                    tenantId,
+                    userId: user.id,
+                    role: Role.PROFESSIONAL
+                }
+            });
+
+            // 3. Create Professional profile
             return tx.professional.create({
                 data: {
                     tenantUserId: tenantUser.id,

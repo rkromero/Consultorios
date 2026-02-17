@@ -8,7 +8,10 @@ import { useSpecialties } from '../../hooks/useSpecialties';
 
 // --- Form Schema ---
 const professionalSchema = z.object({
-    userId: z.string().min(1, "El usuario es requerido"), // In real app, this should be a User Select
+    firstName: z.string().min(1, "El nombre es requerido"),
+    lastName: z.string().min(1, "El apellido es requerido"),
+    email: z.string().email("Email inválido"),
+    phone: z.string().optional(),
     specialtyId: z.string().min(1, "La especialidad es requerida"),
     licenseNumber: z.string().optional(),
 });
@@ -99,16 +102,29 @@ export default function ProfessionalsPage() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
                         <h3 className="text-lg font-bold mb-4">Nuevo Profesional</h3>
-                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                            <p className="text-sm text-yellow-700">
-                                Nota: Para el MVP, debes ingresar el ID del usuario manualmente. En el futuro, esto será un selector de usuarios.
-                            </p>
-                        </div>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Nombre</label>
+                                    <input {...register('firstName')} className="mt-1 block w-full border rounded-md p-2" />
+                                    {errors.firstName && <span className="text-red-500 text-sm">{errors.firstName.message}</span>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Apellido</label>
+                                    <input {...register('lastName')} className="mt-1 block w-full border rounded-md p-2" />
+                                    {errors.lastName && <span className="text-red-500 text-sm">{errors.lastName.message}</span>}
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">ID de Usuario</label>
-                                <input {...register('userId')} className="mt-1 block w-full border rounded-md p-2" placeholder="UUID del usuario" />
-                                {errors.userId && <span className="text-red-500 text-sm">{errors.userId.message}</span>}
+                                <label className="block text-sm font-medium text-gray-700">Email (Acceso al sistema)</label>
+                                <input {...register('email')} type="email" className="mt-1 block w-full border rounded-md p-2" placeholder="profesional@ejemplo.com" />
+                                {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Celular</label>
+                                <input {...register('phone')} className="mt-1 block w-full border rounded-md p-2" />
                             </div>
 
                             <div>

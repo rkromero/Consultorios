@@ -19,7 +19,15 @@ export const getProfessionals = async (): Promise<Professional[]> => {
     return data;
 };
 
-export const createProfessional = async (inputData: { userId: string; specialtyId: string; licenseNumber?: string; color?: string }): Promise<Professional> => {
+export const createProfessional = async (inputData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    specialtyId: string;
+    licenseNumber?: string;
+    color?: string
+}): Promise<Professional> => {
     const { data } = await api.post('/professionals', inputData);
     return data;
 };
