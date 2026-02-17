@@ -34,7 +34,7 @@ export default function DashboardLayout() {
                     </div>
                     <div>
                         <h2 className="font-bold text-gray-800 truncate w-32 tracking-tight" title={tenant.name}>{tenant.name}</h2>
-                        <p className="text-xs text-gray-400 font-medium tracking-wide">CLÍNICA APP</p>
+                        <p className="text-xs text-gray-400 font-medium tracking-wide">Consultorio</p>
                     </div>
                 </div>
 
