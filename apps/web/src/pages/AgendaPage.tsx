@@ -13,7 +13,7 @@ import { cn } from '../lib/utils';
 import { useAppointments } from '../hooks/useAppointments';
 import { useAuthStore } from '../stores/auth.store';
 import { useProfessionals } from '../hooks/useProfessionals';
-import { Appointment, AppointmentType } from '../api/appointments.api';
+import { AppointmentType } from '../api/appointments.api';
 import { User as UserIcon } from 'lucide-react';
 
 import AppointmentModal from '../components/AppointmentModal';

@@ -39,7 +39,7 @@ export default function LandingPage() {
                     loginResult.tenants[0].id,
                     loginResult.token
                 );
-                selectStoreTenant(tenantResult.token, tenantResult.tenant);
+                selectStoreTenant(tenantResult.token, tenantResult.tenant, tenantResult.role);
                 navigate('/dashboard');
             } else {
                 navigate('/select-organization');
