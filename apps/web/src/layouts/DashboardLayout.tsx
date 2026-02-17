@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
 import { useSites } from '../hooks/useSites';
+import { useTenantInfo } from '../hooks/useTenant';
 import {
     LayoutGrid,
     Calendar,
@@ -25,6 +26,7 @@ export default function DashboardLayout() {
     const [isSiteDropdownOpen, setIsSiteDropdownOpen] = useState(false);
 
     const { data: sites = [] } = useSites();
+    const { data: tenantInfo } = useTenantInfo();
 
     // Auto-select first site if none selected
     useEffect(() => {
@@ -58,10 +60,20 @@ export default function DashboardLayout() {
             {/* Logo & Brand */}
             <div className="p-6">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
-                        <HeartPulse className="w-6 h-6" />
-                    </div>
-                    <h2 className="font-bold text-lg text-slate-800 tracking-tight uppercase">{tenant.name}</h2>
+                    {tenantInfo?.logoUrl ? (
+                        <img
+                            src={tenantInfo.logoUrl}
+                            alt={tenant.name}
+                            className="h-10 max-w-[180px] object-contain"
+                        />
+                    ) : (
+                        <>
+                            <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
+                                <HeartPulse className="w-6 h-6" />
+                            </div>
+                            <h2 className="font-bold text-lg text-slate-800 tracking-tight uppercase">{tenantInfo?.name || tenant.name}</h2>
+                        </>
+                    )}
                 </div>
 
                 {/* Sede Selector */}
@@ -176,8 +188,14 @@ export default function DashboardLayout() {
                 {/* Mobile Header */}
                 <header className="lg:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
                     <div className="flex items-center gap-2">
-                        <HeartPulse className="w-6 h-6 text-indigo-600" />
-                        <span className="font-bold text-slate-800">{tenant.name}</span>
+                        {tenantInfo?.logoUrl ? (
+                            <img src={tenantInfo.logoUrl} alt={tenant.name} className="h-8 max-w-[140px] object-contain" />
+                        ) : (
+                            <>
+                                <HeartPulse className="w-6 h-6 text-indigo-600" />
+                                <span className="font-bold text-slate-800">{tenantInfo?.name || tenant.name}</span>
+                            </>
+                        )}
                     </div>
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}

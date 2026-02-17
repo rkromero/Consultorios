@@ -11,7 +11,7 @@ const port = config.PORT;
 
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 import authRoutes from './routes/auth.routes';
 import siteRoutes from './routes/sites.routes';
@@ -43,6 +43,9 @@ app.use('/api/medical-notes', medicalNoteRoutes);
 
 import invoiceRoutes from './routes/invoices.routes';
 app.use('/api/invoices', invoiceRoutes);
+
+import tenantRoutes from './routes/tenant.routes';
+app.use('/api/tenant', tenantRoutes);
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../web/dist')));

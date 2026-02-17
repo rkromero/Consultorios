@@ -11,6 +11,7 @@ import BoxesPage from './pages/config/BoxesPage';
 import SpecialtiesPage from './pages/config/SpecialtiesPage';
 import ProfessionalsPage from './pages/config/ProfessionalsPage';
 import UsersPage from './pages/config/UsersPage';
+import OrganizationPage from './pages/config/OrganizationPage';
 import PatientsPage from './pages/PatientsPage';
 import AgendaPage from './pages/AgendaPage';
 import PatientDetailsPage from './pages/PatientDetailsPage';
@@ -53,7 +54,8 @@ function App() {
                         <Route path="cobranzas" element={<CollectionsPage />} />
                         <Route path="profesionales" element={<ProfessionalsPage />} />
                         <Route path="configuracion" element={<ConfigurationLayout />}>
-                            <Route index element={<Navigate to="sedes" replace />} />
+                            <Route index element={<Navigate to="organizacion" replace />} />
+                            <Route path="organizacion" element={<OrganizationPage />} />
                             <Route path="sedes" element={<SitesPage />} />
                             <Route path="consultorios" element={<BoxesPage />} />
                             <Route path="especialidades" element={<SpecialtiesPage />} />

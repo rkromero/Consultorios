@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 
 export default function ConfigurationLayout() {
     const tabs = [
+        { to: "organizacion", label: "Organización" },
         { to: "sedes", label: "Sedes" },
         { to: "consultorios", label: "Consultorios" },
         { to: "especialidades", label: "Especialidades" },
