@@ -27,7 +27,7 @@ const appointmentSchema = z.object({
     siteId: z.string().min(1, "Debe seleccionar una sede"),
     date: z.string().min(1, "Debe seleccionar una fecha"),
     time: z.string().min(1, "Debe seleccionar una hora"),
-    duration: z.coerce.number().min(15, "La duración mínima es 15 min").default(15),
+    duration: z.coerce.number().default(45),
     notes: z.string().optional(),
 });
 
@@ -52,7 +52,7 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
         resolver: zodResolver(appointmentSchema),
         defaultValues: {
             date: format(new Date(), 'yyyy-MM-dd'),
-            duration: 15,
+            duration: 45,
             siteId: selectedSiteId || ''
         }
     });
@@ -65,7 +65,7 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
                 professionalId: '',
                 date: format(new Date(), 'yyyy-MM-dd'),
                 time: '',
-                duration: 15,
+                duration: 45,
                 siteId: selectedSiteId || '',
                 notes: ''
             });
@@ -204,17 +204,12 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
                             </div>
                             <div>
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
-                                    <Clock size={14} className="text-indigo-500" /> Duración (min)
+                                    <Clock size={14} className="text-indigo-500" /> Duración
                                 </label>
-                                <select
-                                    {...register('duration')}
-                                    className="input-premium bg-slate-50 border-slate-100 hover:border-indigo-200 focus:bg-white transition-all"
-                                >
-                                    <option value="15">15 min</option>
-                                    <option value="30">30 min</option>
-                                    <option value="45">45 min</option>
-                                    <option value="60">60 min</option>
-                                </select>
+                                <div className="input-premium bg-slate-100 border-slate-200 text-slate-500 font-bold cursor-not-allowed flex items-center">
+                                    45 min
+                                </div>
+                                <input type="hidden" {...register('duration')} value="45" />
                             </div>
                         </div>
 
