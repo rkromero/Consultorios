@@ -64,7 +64,6 @@ export class AppointmentService {
         }
 
         // 1. Check for overlaps for the Professional
-        // Overlap condition: (StartA < EndB) and (EndA > StartB)
         const overlap = await prisma.appointment.findFirst({
             where: {
                 tenantId,
@@ -81,7 +80,7 @@ export class AppointmentService {
             throw new Error('El profesional ya tiene un turno en ese horario');
         }
 
-        // 2. Check for overlaps for the Patient (Optional but good practice)
+        // 2. Check for overlaps for the Patient
         const patientOverlap = await prisma.appointment.findFirst({
             where: {
                 tenantId,
@@ -98,18 +97,46 @@ export class AppointmentService {
             throw new Error('El paciente ya tiene un turno en ese horario');
         }
 
-        return prisma.appointment.create({
-            data: {
-                tenantId,
-                patientId: data.patientId,
-                professionalId: data.professionalId,
-                siteId: data.siteId,
-                startTime: start,
-                endTime: end,
-                type: data.type,
-                notes: data.notes,
-                status: AppointmentStatus.CONFIRMED // Default to Confirmed or Reserved
-            }
+        // 3. Get current price to snapshot
+        const priceVersion = await prisma.appointmentPriceVersion.findFirst({
+            where: { tenantId, isActive: true },
+            orderBy: { effectiveFrom: 'desc' }
+        });
+
+        if (!priceVersion) {
+            throw new Error('No hay una versión de precio activa para esta organización. Configure el precio global primero.');
+        }
+
+        return prisma.$transaction(async (tx) => {
+            // Create Appointment
+            const appointment = await tx.appointment.create({
+                data: {
+                    tenantId,
+                    patientId: data.patientId,
+                    professionalId: data.professionalId,
+                    siteId: data.siteId,
+                    startTime: start,
+                    endTime: end,
+                    type: data.type,
+                    notes: data.notes,
+                    status: AppointmentStatus.CONFIRMED,
+                    priceArsInt: priceVersion.priceArsInt,
+                    priceVersionId: priceVersion.id
+                }
+            });
+
+            // Create collection entry
+            await tx.appointmentCollection.create({
+                data: {
+                    tenantId,
+                    appointmentId: appointment.id,
+                    amountDueArsInt: priceVersion.priceArsInt,
+                    dueDate: new Date(start.getTime() + 90 * 24 * 60 * 60 * 1000), // 90 days
+                    status: 'PENDING'
+                }
+            });
+
+            return appointment;
         });
     }
 

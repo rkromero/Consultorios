@@ -15,6 +15,7 @@ import PatientsPage from './pages/PatientsPage';
 import AgendaPage from './pages/AgendaPage';
 import PatientDetailsPage from './pages/PatientDetailsPage';
 import InvoicesPage from './pages/InvoicesPage';
+import CollectionsPage from './pages/CollectionsPage';
 import { useAuthStore } from './stores/auth.store';
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ function App() {
                         <Route path="pacientes" element={<PatientsPage />} />
                         <Route path="pacientes/:id" element={<PatientDetailsPage />} />
                         <Route path="facturacion" element={<InvoicesPage />} />
+                        <Route path="cobranzas" element={<CollectionsPage />} />
                         <Route path="profesionales" element={<ProfessionalsPage />} />
                         <Route path="configuracion" element={<ConfigurationLayout />}>
                             <Route index element={<Navigate to="sedes" replace />} />

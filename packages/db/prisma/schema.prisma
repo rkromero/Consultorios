@@ -39,6 +39,8 @@ model Tenant {
   schedule      Appointment[]
   medicalNotes  MedicalNote[]
   invoices      Invoice[]
+  priceVersions AppointmentPriceVersion[]
+  collections   AppointmentCollection[]
   
   config        Json? 
 }
@@ -147,6 +149,12 @@ enum AppointmentStatus {
   CANCELLED
 }
 
+enum CollectionStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
 enum AppointmentType {
   REGULAR
   EVALUATION
@@ -177,6 +185,11 @@ model Appointment {
   
   notes           String?
   
+  priceArsInt     Int?
+  priceVersionId  String?
+  priceVersion    AppointmentPriceVersion? @relation(fields: [priceVersionId], references: [id])
+  collection      AppointmentCollection?
+
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   
@@ -226,4 +239,32 @@ model Invoice {
   paymentMethod   String?
   
   createdAt       DateTime    @default(now())
+}
+
+model AppointmentPriceVersion {
+  id                String      @id @default(uuid())
+  tenantId          String
+  tenant            Tenant      @relation(fields: [tenantId], references: [id])
+  priceArsInt       Int
+  effectiveFrom     DateTime    @default(now())
+  createdByUserId   String
+  createdAt         DateTime    @default(now())
+  isActive          Boolean     @default(true)
+  
+  appointments      Appointment[]
+}
+
+model AppointmentCollection {
+  id                String            @id @default(uuid())
+  appointmentId     String            @unique
+  appointment       Appointment       @relation(fields: [appointmentId], references: [id])
+  tenantId          String
+  tenant            Tenant            @relation(fields: [tenantId], references: [id])
+  amountDueArsInt   Int
+  dueDate           DateTime
+  status            CollectionStatus  @default(PENDING)
+  paidAt            DateTime?
+  notes             String?
+  updatedAt         DateTime          @default(now()) @updatedAt
+  updatedByUserId   String?
 }

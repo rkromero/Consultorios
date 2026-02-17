@@ -26,10 +26,14 @@ app.use('/api/specialties', specialtyRoutes);
 import professionalRoutes from './routes/professionals.routes';
 import patientRoutes from './routes/patients.routes';
 import userRoutes from './routes/users.routes';
+import pricingRoutes from './routes/pricing.routes';
+import collectionsRoutes from './routes/collections.routes';
 
 app.use('/api/professionals', professionalRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin/pricing', pricingRoutes);
+app.use('/api/admin/collections', collectionsRoutes);
 
 import appointmentRoutes from './routes/appointments.routes';
 app.use('/api/appointments', appointmentRoutes);

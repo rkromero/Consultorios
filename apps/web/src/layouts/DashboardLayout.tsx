@@ -53,6 +53,7 @@ export default function DashboardLayout() {
         { to: "/dashboard/profesionales", label: "Profesionales", icon: Stethoscope },
         { to: "/dashboard/caja", label: "Caja y Cobros", icon: Wallet },
         { to: "/dashboard/facturacion", label: "Facturación", icon: FileText, badge: 1 },
+        { to: "/dashboard/cobranzas", label: "Cobranzas", icon: Wallet },
         { to: "/dashboard/configuracion/usuarios", label: "Gestión de Usuarios", icon: UserCog },
         { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
     ];
