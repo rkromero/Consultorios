@@ -132,14 +132,6 @@ export default function DashboardLayout() {
                                 <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400 group-hover:text-slate-600")} />
                                 <span>{item.label}</span>
                             </div>
-                            {item.badge && (
-                                <span className={cn(
-                                    "px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm",
-                                    isActive ? "bg-white/20 text-white" : "bg-indigo-600 text-white"
-                                )}>
-                                    {item.badge}
-                                </span>
-                            )}
                         </NavLink>
                     );
                 })}
