@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format, parseISO, isToday, addHours, isBefore, isAfter, startOfDay, endOfDay } from 'date-fns';
+import { format, parseISO, addHours, isBefore, isAfter, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import {
     Calendar,
     Clock,
-    Users,
     UserCheck,
     UserX,
     AlertCircle,
@@ -15,7 +14,6 @@ import {
     Building2,
     Activity,
     CheckCircle2,
-    XCircle,
     Timer
 } from 'lucide-react';
 import { cn } from '../lib/utils';
