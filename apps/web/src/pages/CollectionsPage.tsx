@@ -6,6 +6,7 @@ import {
     getCollections,
     markAsPaid,
     updateDueDate,
+    revertToPending,
     CollectionStatus
 } from '../api/collections.api';
 import {
@@ -13,7 +14,8 @@ import {
     CheckCircle2,
     Clock,
     Calendar as CalendarIcon,
-    MoreVertical
+    MoreVertical,
+    Undo2
 } from 'lucide-react';
 
 export default function CollectionsPage() {
@@ -41,6 +43,13 @@ export default function CollectionsPage() {
     const updateDueDateMutation = useMutation({
         mutationFn: ({ id, dueDate }: { id: string; dueDate: string }) =>
             updateDueDate(id, dueDate),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['collections'] });
+        },
+    });
+
+    const revertMutation = useMutation({
+        mutationFn: (appointmentId: string) => revertToPending(appointmentId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['collections'] });
         },
@@ -230,8 +239,21 @@ export default function CollectionsPage() {
                                             </div>
                                         )}
                                         {item.status === CollectionStatus.PAID && (
-                                            <div className="text-xs text-slate-400 italic">
-                                                Cobrado el {format(parseISO(item.paidAt!), 'dd/MM/yy')}
+                                            <div className="flex items-center justify-end gap-2">
+                                                <span className="text-xs text-slate-400 italic">
+                                                    Cobrado el {format(parseISO(item.paidAt!), 'dd/MM/yy')}
+                                                </span>
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm('¿Revertir este cobro a estado Pendiente? Se borrará la fecha de cobro.')) {
+                                                            revertMutation.mutate(item.appointmentId);
+                                                        }
+                                                    }}
+                                                    className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                                    title="Revertir a Pendiente"
+                                                >
+                                                    <Undo2 className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         )}
                                     </td>

@@ -56,3 +56,13 @@ export const markAsPaid = async (req: Request, res: Response) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+export const revertToPending = async (req: Request, res: Response) => {
+    try {
+        const { appointmentId } = req.params;
+        const item = await collectionsService.revertToPending(req.tenantId!, appointmentId, req.user!.id);
+        res.json(item);
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};

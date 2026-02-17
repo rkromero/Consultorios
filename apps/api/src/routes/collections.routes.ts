@@ -16,5 +16,6 @@ const adminOnly = (req: any, res: any, next: any) => {
 router.get('/', authMiddleware, tenantMiddleware, adminOnly, CollectionsController.getAll);
 router.patch('/:appointmentId/due-date', authMiddleware, tenantMiddleware, adminOnly, CollectionsController.updateDueDate);
 router.post('/:appointmentId/mark-paid', authMiddleware, tenantMiddleware, adminOnly, CollectionsController.markAsPaid);
+router.post('/:appointmentId/revert-pending', authMiddleware, tenantMiddleware, adminOnly, CollectionsController.revertToPending);
 
 export default router;

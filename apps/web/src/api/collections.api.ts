@@ -47,3 +47,8 @@ export const markAsPaid = async (appointmentId: string, data: { paidAt: string; 
     const response = await api.post(`/admin/collections/${appointmentId}/mark-paid`, data);
     return response.data;
 };
+
+export const revertToPending = async (appointmentId: string): Promise<Collection> => {
+    const response = await api.post(`/admin/collections/${appointmentId}/revert-pending`);
+    return response.data;
+};

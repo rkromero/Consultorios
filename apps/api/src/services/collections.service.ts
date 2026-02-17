@@ -125,6 +125,26 @@ export class CollectionsService {
         });
     }
 
+    async revertToPending(tenantId: string, appointmentId: string, userId: string) {
+        const collection = await prisma.appointmentCollection.findFirst({
+            where: { appointmentId, tenantId }
+        });
+
+        if (!collection) throw new Error('Cobranza no encontrada');
+
+        const newStatus = isPast(collection.dueDate) ? CollectionStatus.OVERDUE : CollectionStatus.PENDING;
+
+        return prisma.appointmentCollection.update({
+            where: { appointmentId },
+            data: {
+                status: newStatus,
+                paidAt: null,
+                notes: null,
+                updatedByUserId: userId
+            }
+        });
+    }
+
     async updateDueDate(tenantId: string, appointmentId: string, dueDate: string, userId: string) {
         return prisma.appointmentCollection.update({
             where: { appointmentId },
