@@ -28,8 +28,8 @@ export default function AgendaPage() {
 
     const { data: appointments = [], isLoading } = useAppointments({
         start: weekStart.toISOString(),
-        end: addDays(weekEnd, 1).toISOString(), // Include all of Friday
-        siteId: selectedSiteId || undefined
+        end: addDays(weekEnd, 1).toISOString(),
+        // siteId: selectedSiteId || undefined // REMOVED: Load all sites to show overlaps
     });
 
     const timeSlots = [
@@ -181,7 +181,14 @@ export default function AgendaPage() {
                                 {weekDays.map(day => {
                                     const dayKey = format(day, 'yyyy-MM-dd');
                                     const dayApps = appointmentsByDay[dayKey] || [];
-                                    const timeApps = dayApps.filter(app => format(parseISO(app.startTime), 'HH:mm') === time);
+                                    const timeApps = dayApps.filter(app => {
+                                        const appDate = parseISO(app.startTime);
+                                        const appMinutes = appDate.getHours() * 60 + appDate.getMinutes();
+                                        const [slotH, slotM] = time.split(':').map(Number);
+                                        const slotMinutes = slotH * 60 + slotM;
+                                        // Bucket appointment into the 15-min slot it falls into
+                                        return appMinutes >= slotMinutes && appMinutes < slotMinutes + 15;
+                                    });
 
                                     return (
                                         <div
@@ -193,25 +200,36 @@ export default function AgendaPage() {
                                                     key={app.id}
                                                     className={cn(
                                                         "absolute inset-x-1 top-1 z-10 rounded-xl p-3 shadow-sm hover:shadow-md transition-all cursor-pointer border-l-4",
-                                                        app.type === AppointmentType.REGULAR
-                                                            ? "bg-indigo-50 border-indigo-600 group-hover:bg-indigo-100"
-                                                            : "bg-amber-50 border-amber-500 group-hover:bg-amber-100"
+                                                        app.siteId !== selectedSiteId && selectedSiteId
+                                                            ? "bg-slate-50 border-slate-300 opacity-60 grayscale-[0.5]"
+                                                            : app.type === AppointmentType.REGULAR
+                                                                ? "bg-indigo-50 border-indigo-600 group-hover:bg-indigo-100"
+                                                                : "bg-amber-50 border-amber-500 group-hover:bg-amber-100"
                                                     )}
                                                     style={{ height: 'calc(100% - 8px)' }}
                                                 >
                                                     <div className="flex flex-col h-full overflow-hidden">
-                                                        <span className="text-[10px] font-black text-slate-800 leading-tight truncate uppercase">
-                                                            {app.patient?.firstName} {app.patient?.lastName}
-                                                        </span>
+                                                        <div className="flex items-center justify-between gap-1">
+                                                            <span className="text-[10px] font-black text-slate-800 leading-tight truncate uppercase">
+                                                                {app.patient?.firstName} {app.patient?.lastName}
+                                                            </span>
+                                                            {app.siteId !== selectedSiteId && selectedSiteId && (
+                                                                <span className="text-[8px] font-black text-slate-400 uppercase bg-slate-100 px-1 rounded">
+                                                                    {app.site?.name}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <span className="text-[9px] text-slate-500 font-bold leading-tight truncate mt-0.5">
                                                             {app.professional?.tenantUser?.user?.fullName.split(' ')[0]}
                                                         </span>
                                                         <div className="mt-auto flex items-center justify-between">
                                                             <div className={cn(
                                                                 "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
-                                                                app.type === AppointmentType.REGULAR ? "bg-indigo-100 text-indigo-700" : "bg-amber-100 text-amber-700"
+                                                                app.siteId !== selectedSiteId && selectedSiteId
+                                                                    ? "bg-slate-200 text-slate-600"
+                                                                    : app.type === AppointmentType.REGULAR ? "bg-indigo-100 text-indigo-700" : "bg-amber-100 text-amber-700"
                                                             )}>
-                                                                {app.type === AppointmentType.REGULAR ? 'Cita' : 'Eval'}
+                                                                {app.siteId !== selectedSiteId && selectedSiteId ? 'En otra sede' : app.type === AppointmentType.REGULAR ? 'Cita' : 'Eval'}
                                                             </div>
                                                             <MoreVertical size={12} className="text-slate-300" />
                                                         </div>
