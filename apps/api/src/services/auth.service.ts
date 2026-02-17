@@ -1,9 +1,10 @@
 import prisma from '../lib/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User, Tenant, Role } from '@clinica/db';
+import { Role } from '@clinica/db';
+import { config } from '../config';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+const JWT_SECRET = config.JWT_SECRET;
 
 export class AuthService {
     async login(email: string, password: string) {

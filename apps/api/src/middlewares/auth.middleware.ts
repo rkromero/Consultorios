@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@clinica/db';
+import { config } from '../config';
 
 const prisma = new PrismaClient(); // In a real app, inject this or import singleton
 
@@ -20,7 +21,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const token = authHeader.split(' ')[1];
 
     try {
-        const secret = process.env.JWT_SECRET || 'secret';
+        const secret = config.JWT_SECRET;
         const decoded = jwt.verify(token, secret) as JwtPayload;
 
         const user = await prisma.user.findUnique({

@@ -3,11 +3,10 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
-
-dotenv.config();
+import { config } from './config';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = config.PORT;
 
 app.use(cors());
 app.use(morgan('dev'));
