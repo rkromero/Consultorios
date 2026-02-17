@@ -127,6 +127,14 @@ export class AuthService {
                 }
             });
 
+            // Create default Site with business name
+            await tx.site.create({
+                data: {
+                    tenantId: tenant.id,
+                    name: data.tenantName, // Default site matches business name
+                }
+            });
+
             await tx.tenantUser.create({
                 data: {
                     userId: user.id,

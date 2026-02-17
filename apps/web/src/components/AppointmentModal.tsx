@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Calendar, Clock, User, Building2, FileText, Loader2 } from 'lucide-react';
+import { useAuthStore } from '../stores/auth.store';
 import { usePatients } from '../hooks/usePatients';
 import { useProfessionals } from '../hooks/useProfessionals';
 import { useSites } from '../hooks/useSites';
@@ -29,6 +31,7 @@ interface AppointmentModalProps {
 }
 
 export default function AppointmentModal({ isOpen, onClose, type }: AppointmentModalProps) {
+    const { selectedSiteId } = useAuthStore();
     const { data: patientsRes } = usePatients({ limit: 100 });
     const { data: professionals = [] } = useProfessionals();
     const { data: sites = [] } = useSites();
@@ -36,13 +39,25 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
 
     const patients = (patientsRes as any)?.data || [];
 
-    const { register, handleSubmit, formState: { errors } } = useForm<AppointmentForm>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<AppointmentForm>({
         resolver: zodResolver(appointmentSchema),
         defaultValues: {
             date: format(new Date(), 'yyyy-MM-dd'),
-            duration: 15
+            duration: 15,
+            siteId: selectedSiteId || ''
         }
     });
+
+    // Reset form when modal opens or selectedSiteId changes
+    useEffect(() => {
+        if (isOpen) {
+            reset({
+                date: format(new Date(), 'yyyy-MM-dd'),
+                duration: 15,
+                siteId: selectedSiteId || ''
+            });
+        }
+    }, [isOpen, selectedSiteId, reset]);
 
     const onSubmit = (data: AppointmentForm) => {
         const startTime = new Date(`${data.date}T${data.time}`);

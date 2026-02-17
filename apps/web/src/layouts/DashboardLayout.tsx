@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
+import { useSites } from '../hooks/useSites';
 import {
     LayoutGrid,
     ListTodo,
@@ -15,15 +16,28 @@ import {
     ChevronDown,
     Menu,
     HeartPulse,
-    Settings
+    Settings,
+    Building2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function DashboardLayout() {
-    const { user, tenant, logout } = useAuthStore();
+    const { user, tenant, selectedSiteId, setSelectedSiteId, logout } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSiteDropdownOpen, setIsSiteDropdownOpen] = useState(false);
+
+    const { data: sites = [] } = useSites();
+
+    // Auto-select first site if none selected
+    useEffect(() => {
+        if (!selectedSiteId && sites.length > 0) {
+            setSelectedSiteId(sites[0].id);
+        }
+    }, [sites, selectedSiteId, setSelectedSiteId]);
+
+    const activeSite = sites.find(s => s.id === selectedSiteId) || sites[0];
 
     const handleLogout = () => {
         logout();
@@ -59,13 +73,39 @@ export default function DashboardLayout() {
                 </div>
 
                 {/* Sede Selector */}
-                <button className="w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm mb-8">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                        <span className="truncate uppercase">Sede San Martín</span>
-                    </div>
-                    <ChevronDown size={14} />
-                </button>
+                <div className="relative mb-8">
+                    <button
+                        onClick={() => setIsSiteDropdownOpen(!isSiteDropdownOpen)}
+                        className="w-full flex items-center justify-between px-4 py-2 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                    >
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" />
+                            <span className="truncate uppercase font-bold text-[11px] tracking-tight">{activeSite?.name || 'Seleccionar Sede'}</span>
+                        </div>
+                        <ChevronDown size={14} className={cn("transition-transform", isSiteDropdownOpen ? "rotate-180" : "")} />
+                    </button>
+
+                    {isSiteDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                            {sites.map(site => (
+                                <button
+                                    key={site.id}
+                                    onClick={() => {
+                                        setSelectedSiteId(site.id);
+                                        setIsSiteDropdownOpen(false);
+                                    }}
+                                    className={cn(
+                                        "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold uppercase tracking-tight transition-colors",
+                                        site.id === selectedSiteId ? "bg-indigo-50 text-indigo-600" : "text-slate-500 hover:bg-slate-50"
+                                    )}
+                                >
+                                    <Building2 size={14} />
+                                    {site.name}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 {/* Profile Section */}
                 <div className="flex items-center gap-3 mb-8 px-1">
