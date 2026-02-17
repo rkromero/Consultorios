@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -37,8 +38,16 @@ app.use('/api/medical-notes', medicalNoteRoutes);
 import invoiceRoutes from './routes/invoices.routes';
 app.use('/api/invoices', invoiceRoutes);
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../../web/dist')));
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Catch-all handler for React Router (must be after all API routes)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../web/dist/index.html'));
 });
 
 if (!process.env.DATABASE_URL) {
