@@ -28,6 +28,15 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return children;
 };
 
+const AdminRoute = ({ children }: { children: JSX.Element }) => {
+    const role = useAuthStore(s => s.role);
+    const tenant = useAuthStore(s => s.tenant);
+    const availableTenants = useAuthStore(s => s.availableTenants);
+    const effectiveRole = role || availableTenants.find(t => t.id === tenant?.id)?.role || null;
+    if (effectiveRole === 'PROFESSIONAL') return <Navigate to="/dashboard" replace />;
+    return children;
+};
+
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
@@ -50,10 +59,10 @@ function App() {
                         <Route path="agenda" element={<AgendaPage />} />
                         <Route path="pacientes" element={<PatientsPage />} />
                         <Route path="pacientes/:id" element={<PatientDetailsPage />} />
-                        <Route path="facturacion" element={<InvoicesPage />} />
-                        <Route path="cobranzas" element={<CollectionsPage />} />
-                        <Route path="profesionales" element={<ProfessionalsPage />} />
-                        <Route path="configuracion" element={<ConfigurationLayout />}>
+                        <Route path="facturacion" element={<AdminRoute><InvoicesPage /></AdminRoute>} />
+                        <Route path="cobranzas" element={<AdminRoute><CollectionsPage /></AdminRoute>} />
+                        <Route path="profesionales" element={<AdminRoute><ProfessionalsPage /></AdminRoute>} />
+                        <Route path="configuracion" element={<AdminRoute><ConfigurationLayout /></AdminRoute>}>
                             <Route index element={<Navigate to="organizacion" replace />} />
                             <Route path="organizacion" element={<OrganizationPage />} />
                             <Route path="sedes" element={<SitesPage />} />

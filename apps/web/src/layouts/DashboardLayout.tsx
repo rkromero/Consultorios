@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/auth.store';
 import { useSites } from '../hooks/useSites';
@@ -18,8 +18,18 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+const ROLE_LABELS: Record<string, string> = {
+    ADMIN: 'Administrador/a',
+    COORDINATOR: 'Coordinador/a',
+    RECEPTIONIST: 'Recepcionista',
+    PROFESSIONAL: 'Profesional',
+    PATIENT: 'Paciente',
+};
+
 export default function DashboardLayout() {
-    const { user, tenant, selectedSiteId, setSelectedSiteId, logout } = useAuthStore();
+    const { user, tenant, role, availableTenants, selectedSiteId, setSelectedSiteId, logout } = useAuthStore();
+    const effectiveRole = role || availableTenants.find(t => t.id === tenant?.id)?.role || null;
+    const isProfessional = effectiveRole === 'PROFESSIONAL';
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,14 +56,23 @@ export default function DashboardLayout() {
         return <div>Cargando...</div>;
     }
 
-    const navItems = [
-        { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, end: true },
-        { to: "/dashboard/agenda", label: "Agenda General", icon: Calendar },
-        { to: "/dashboard/pacientes", label: "Directorio Pacientes", icon: Users },
-        { to: "/dashboard/profesionales", label: "Profesionales", icon: Stethoscope },
-        { to: "/dashboard/cobranzas", label: "Cobranzas", icon: Wallet },
-        { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
-    ];
+    const navItems = useMemo(() => {
+        if (isProfessional) {
+            return [
+                { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, end: true },
+                { to: "/dashboard/agenda", label: "Mi Agenda", icon: Calendar },
+                { to: "/dashboard/pacientes", label: "Mis Pacientes", icon: Users },
+            ];
+        }
+        return [
+            { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, end: true },
+            { to: "/dashboard/agenda", label: "Agenda General", icon: Calendar },
+            { to: "/dashboard/pacientes", label: "Directorio Pacientes", icon: Users },
+            { to: "/dashboard/profesionales", label: "Profesionales", icon: Stethoscope },
+            { to: "/dashboard/cobranzas", label: "Cobranzas", icon: Wallet },
+            { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
+        ];
+    }, [isProfessional]);
 
     const Sidebar = () => (
         <div className="flex flex-col h-full bg-white border-r border-slate-200">
@@ -118,7 +137,7 @@ export default function DashboardLayout() {
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-slate-800 truncate leading-none mb-1">{user.fullName}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Coordinador/a</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{effectiveRole ? (ROLE_LABELS[effectiveRole] || effectiveRole) : 'Usuario'}</p>
                     </div>
                 </div>
             </div>

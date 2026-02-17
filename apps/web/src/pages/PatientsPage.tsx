@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Search, Phone, Mail } from 'lucide-react';
 import { usePatients, useCreatePatient } from '../hooks/usePatients';
+import { useAuthStore } from '../stores/auth.store';
 import { format } from 'date-fns';
 
 // --- Form Schema ---
@@ -27,6 +28,10 @@ export default function PatientsPage() {
     const { data: response, isLoading } = usePatients({ q: search, page, limit: 10 });
     const createPatient = useCreatePatient();
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const { role, availableTenants, tenant } = useAuthStore();
+    const effectiveRole = role || availableTenants.find(t => t.id === tenant?.id)?.role || null;
+    const isProfessional = effectiveRole === 'PROFESSIONAL';
 
     // Form handling
     const { register, handleSubmit, reset, formState: { errors } } = useForm<PatientForm>({
@@ -53,16 +58,18 @@ export default function PatientsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800">Directorio de Pacientes</h1>
-                    <p className="text-xs text-slate-500 font-medium">{response?.meta?.total || 0} pacientes registrados</p>
+                    <h1 className="text-xl font-bold text-slate-800">{isProfessional ? 'Mis Pacientes' : 'Directorio de Pacientes'}</h1>
+                    <p className="text-xs text-slate-500 font-medium">{response?.meta?.total || 0} pacientes {isProfessional ? 'asignados' : 'registrados'}</p>
                 </div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="btn-primary"
-                >
-                    <Plus size={18} />
-                    Nuevo Paciente
-                </button>
+                {!isProfessional && (
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="btn-primary"
+                    >
+                        <Plus size={18} />
+                        Nuevo Paciente
+                    </button>
+                )}
             </div>
 
             {/* Search Bar */}
@@ -176,7 +183,7 @@ export default function PatientsPage() {
             )}
 
             {/* Create Modal */}
-            {isModalOpen && (
+            {isModalOpen && !isProfessional && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl border border-slate-100">
                         <div className="flex items-center gap-3 mb-6">

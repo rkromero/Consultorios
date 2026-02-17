@@ -2,7 +2,7 @@ import prisma from '../lib/prisma';
 import { Prisma } from '@prisma/client';
 
 export class PatientService {
-    async getAll(tenantId: string, search?: string, page = 1, limit = 20) {
+    async getAll(tenantId: string, search?: string, page = 1, limit = 20, professionalId?: string) {
         const skip = (page - 1) * limit;
 
         const where: Prisma.PatientWhereInput = {
@@ -14,6 +14,11 @@ export class PatientService {
                     { dni: { contains: search, mode: 'insensitive' } },
                     { email: { contains: search, mode: 'insensitive' } },
                 ]
+            } : {}),
+            ...(professionalId ? {
+                appointments: {
+                    some: { professionalId }
+                }
             } : {})
         };
 

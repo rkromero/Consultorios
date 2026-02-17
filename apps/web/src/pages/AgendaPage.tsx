@@ -24,7 +24,9 @@ import AppointmentModal from '../components/AppointmentModal';
 import AppointmentDetailSidebar from '../components/AppointmentDetailSidebar';
 
 export default function AgendaPage() {
-    const { selectedSiteId } = useAuthStore();
+    const { selectedSiteId, role, availableTenants, tenant } = useAuthStore();
+    const effectiveRole = role || availableTenants.find(t => t.id === tenant?.id)?.role || null;
+    const isProfessional = effectiveRole === 'PROFESSIONAL';
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<AppointmentType>(AppointmentType.REGULAR);
@@ -127,19 +129,21 @@ export default function AgendaPage() {
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
-                        <UserIcon size={14} className="ml-2 text-slate-400" />
-                        <select
-                            value={selectedProfessionalId}
-                            onChange={(e) => setSelectedProfessionalId(e.target.value)}
-                            className="bg-transparent text-[11px] font-bold text-slate-600 uppercase tracking-tight focus:outline-none min-w-[150px] cursor-pointer"
-                        >
-                            <option value="all">Todos los Profesionales</option>
-                            {professionals.map(p => (
-                                <option key={p.id} value={p.id}>{p.tenantUser?.user?.fullName}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {!isProfessional && (
+                        <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                            <UserIcon size={14} className="ml-2 text-slate-400" />
+                            <select
+                                value={selectedProfessionalId}
+                                onChange={(e) => setSelectedProfessionalId(e.target.value)}
+                                className="bg-transparent text-[11px] font-bold text-slate-600 uppercase tracking-tight focus:outline-none min-w-[150px] cursor-pointer"
+                            >
+                                <option value="all">Todos los Profesionales</option>
+                                {professionals.map(p => (
+                                    <option key={p.id} value={p.id}>{p.tenantUser?.user?.fullName}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -182,22 +186,24 @@ export default function AgendaPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => openModal(AppointmentType.REGULAR)}
-                            className="btn-primary py-2.5 px-6 shadow-lg shadow-indigo-100 flex items-center gap-2"
-                        >
-                            <Plus size={18} />
-                            <span>Nueva Cita</span>
-                        </button>
-                        <button
-                            onClick={() => openModal(AppointmentType.EVALUATION)}
-                            className="bg-amber-500 hover:bg-amber-600 text-white py-2.5 px-6 rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-100 flex items-center gap-2"
-                        >
-                            <Plus size={18} />
-                            <span>Nueva Evaluación</span>
-                        </button>
-                    </div>
+                    {!isProfessional && (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => openModal(AppointmentType.REGULAR)}
+                                className="btn-primary py-2.5 px-6 shadow-lg shadow-indigo-100 flex items-center gap-2"
+                            >
+                                <Plus size={18} />
+                                <span>Nueva Cita</span>
+                            </button>
+                            <button
+                                onClick={() => openModal(AppointmentType.EVALUATION)}
+                                className="bg-amber-500 hover:bg-amber-600 text-white py-2.5 px-6 rounded-xl font-bold text-sm transition-all shadow-lg shadow-amber-100 flex items-center gap-2"
+                            >
+                                <Plus size={18} />
+                                <span>Nueva Evaluación</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -471,11 +477,13 @@ export default function AgendaPage() {
             )}
 
             {/* Appointment Modal */}
-            <AppointmentModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                type={modalType}
-            />
+            {!isProfessional && (
+                <AppointmentModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    type={modalType}
+                />
+            )}
 
             {/* Appointment Detail Sidebar */}
             <AppointmentDetailSidebar
