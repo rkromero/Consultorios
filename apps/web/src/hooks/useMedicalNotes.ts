@@ -12,7 +12,7 @@ export const useMedicalNotes = (patientId: string) => {
 export const useCreateMedicalNote = (patientId: string) => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (content: string) => medicalNotesApi.createMedicalNote({ patientId, content }),
+        mutationFn: (payload: FormData) => medicalNotesApi.createMedicalNote(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['medical-notes', patientId] });
         },

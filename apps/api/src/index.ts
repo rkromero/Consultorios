@@ -41,6 +41,9 @@ app.use('/api/invoices', invoiceRoutes);
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../web/dist')));
 
+// Serve uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

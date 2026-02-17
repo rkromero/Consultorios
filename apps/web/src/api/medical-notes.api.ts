@@ -1,5 +1,13 @@
 import api from '../lib/axios';
 
+export interface Attachment {
+    id: string;
+    url: string;
+    filename: string;
+    mimeType: string;
+    size: number;
+}
+
 export interface MedicalNote {
     id: string;
     content: string;
@@ -14,6 +22,7 @@ export interface MedicalNote {
             name: string;
         }
     };
+    attachments: Attachment[];
 }
 
 export const getByPatient = async (patientId: string): Promise<MedicalNote[]> => {
@@ -21,7 +30,11 @@ export const getByPatient = async (patientId: string): Promise<MedicalNote[]> =>
     return data;
 };
 
-export const createMedicalNote = async (payload: { patientId: string; content: string }): Promise<MedicalNote> => {
-    const { data } = await api.post('/medical-notes', payload);
+export const createMedicalNote = async (payload: FormData): Promise<MedicalNote> => {
+    const { data } = await api.post('/medical-notes', payload, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
     return data;
 };

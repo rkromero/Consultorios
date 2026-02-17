@@ -23,15 +23,25 @@ export default function PatientDetailsPage() {
     const createNote = useCreateMedicalNote(id!);
 
     const [isAddingNote, setIsAddingNote] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     const { register, handleSubmit, reset } = useForm<NoteForm>({
         resolver: zodResolver(noteSchema)
     });
 
     const onSubmit = (data: NoteForm) => {
-        createNote.mutate(data.content, {
+        const formData = new FormData();
+        formData.append('patientId', id!);
+        formData.append('content', data.content);
+
+        selectedFiles.forEach(file => {
+            formData.append('attachments', file);
+        });
+
+        createNote.mutate(formData, {
             onSuccess: () => {
                 setIsAddingNote(false);
+                setSelectedFiles([]);
                 reset();
             },
             onError: (err: any) => {
@@ -130,10 +140,48 @@ export default function PatientDetailsPage() {
                                         placeholder="Escriba la evolución del paciente..."
                                         autoFocus
                                     />
+
+                                    <div className="mt-3">
+                                        <label className="flex items-center gap-2 text-blue-600 hover:text-blue-700 cursor-pointer text-sm font-medium">
+                                            <Plus size={16} />
+                                            <span>Adjuntar archivos (Imágenes, PDF, etc.)</span>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    if (e.target.files) {
+                                                        setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+
+                                        {selectedFiles.length > 0 && (
+                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                {selectedFiles.map((file, idx) => (
+                                                    <div key={idx} className="bg-gray-100 px-2 py-1 rounded text-xs flex items-center gap-2">
+                                                        <span className="truncate max-w-[150px]">{file.name}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))}
+                                                            className="text-red-500 hover:text-red-700"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className="flex justify-end gap-2 mt-3">
                                         <button
                                             type="button"
-                                            onClick={() => setIsAddingNote(false)}
+                                            onClick={() => {
+                                                setIsAddingNote(false);
+                                                setSelectedFiles([]);
+                                            }}
                                             className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded text-sm"
                                         >
                                             Cancelar
@@ -182,6 +230,23 @@ export default function PatientDetailsPage() {
                                             <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
                                                 {note.content}
                                             </p>
+
+                                            {note.attachments && note.attachments.length > 0 && (
+                                                <div className="mt-4 flex flex-wrap gap-3">
+                                                    {note.attachments.map((att: any) => (
+                                                        <a
+                                                            key={att.id}
+                                                            href={att.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-2 p-2 bg-blue-50 text-blue-700 rounded-lg text-xs hover:bg-blue-100 transition shadow-sm"
+                                                        >
+                                                            <FileText size={14} />
+                                                            <span className="truncate max-w-[120px]">{att.filename}</span>
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))

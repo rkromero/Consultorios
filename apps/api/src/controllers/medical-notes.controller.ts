@@ -45,7 +45,8 @@ export const create = async (req: Request, res: Response) => {
             return res.status(403).json({ message: 'Solo los profesionales pueden crear notas médicas' });
         }
 
-        const item = await service.create(req.tenantId!, tenantUser.professionalData.id, req.body);
+        const files = req.files as Express.Multer.File[];
+        const item = await service.create(req.tenantId!, tenantUser.professionalData.id, req.body, files);
         res.status(201).json(item);
     } catch (error: any) {
         res.status(400).json({ message: error.message });

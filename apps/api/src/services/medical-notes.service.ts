@@ -25,7 +25,7 @@ export class MedicalNoteService {
     async create(tenantId: string, authorId: string, data: {
         patientId: string;
         content: string;
-    }) {
+    }, files: Express.Multer.File[] = []) {
         // Check if author is valid professional
         const professional = await prisma.professional.findUnique({
             where: { id: authorId }
@@ -39,7 +39,17 @@ export class MedicalNoteService {
                 patientId: data.patientId,
                 authorId,
                 content: data.content,
-                // Attachments handled separately or via update for MVP
+                attachments: {
+                    create: files.map(file => ({
+                        filename: file.originalname,
+                        mimeType: file.mimetype,
+                        size: file.size,
+                        url: `/uploads/${file.filename}`
+                    }))
+                }
+            },
+            include: {
+                attachments: true
             }
         });
     }
