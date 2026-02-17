@@ -4,14 +4,10 @@ import { useAuthStore } from '../stores/auth.store';
 import { useSites } from '../hooks/useSites';
 import {
     LayoutGrid,
-    ListTodo,
-    Mail,
     Calendar,
-    Video,
     Users,
     Wallet,
     FileText,
-    MessageSquare,
     LogOut,
     ChevronDown,
     Menu,
@@ -50,14 +46,10 @@ export default function DashboardLayout() {
 
     const navItems = [
         { to: "/dashboard", label: "Panel de Control", icon: LayoutGrid, end: true },
-        { to: "/dashboard/tareas", label: "Tareas pendientes", icon: ListTodo, badge: 225 },
-        { to: "/dashboard/emails", label: "Gestión de Emails", icon: Mail },
         { to: "/dashboard/agenda", label: "Agenda General", icon: Calendar },
-        { to: "/dashboard/teleconsulta", label: "Agenda Teleconsulta", icon: Video },
         { to: "/dashboard/pacientes", label: "Directorio Pacientes", icon: Users },
         { to: "/dashboard/caja", label: "Caja y Cobros", icon: Wallet },
         { to: "/dashboard/facturacion", label: "Facturación", icon: FileText, badge: 1 },
-        { to: "/dashboard/chat", label: "Chat Interno", icon: MessageSquare },
         { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
     ];
 
