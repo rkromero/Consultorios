@@ -13,7 +13,7 @@ import { cn } from '../lib/utils';
 import { useAppointments } from '../hooks/useAppointments';
 import { useAuthStore } from '../stores/auth.store';
 import { useProfessionals } from '../hooks/useProfessionals';
-import { AppointmentType } from '../api/appointments.api';
+import { AppointmentStatus, AppointmentType } from '../api/appointments.api';
 import { User as UserIcon } from 'lucide-react';
 
 import AppointmentModal from '../components/AppointmentModal';
@@ -59,12 +59,13 @@ export default function AgendaPage() {
         setIsModalOpen(true);
     };
 
-    // Group appointments by day and time for easier rendering
+    // Group appointments by day and time for easier rendering (exclude cancelled)
     const appointmentsByDay = useMemo(() => {
         const grouped: Record<string, any[]> = {};
+        const active = appointments.filter(a => a.status !== AppointmentStatus.CANCELLED);
         const filtered = selectedProfessionalId === 'all'
-            ? appointments
-            : appointments.filter(a => a.professionalId === selectedProfessionalId);
+            ? active
+            : active.filter(a => a.professionalId === selectedProfessionalId);
 
         filtered.forEach(app => {
             const dayKey = format(parseISO(app.startTime), 'yyyy-MM-dd');
