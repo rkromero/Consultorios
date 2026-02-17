@@ -2,7 +2,16 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { X, Calendar, Clock, User, Building2, FileText, Loader2 } from 'lucide-react';
+import {
+    X,
+    Calendar,
+    Clock,
+    User,
+    Building2,
+    FileText,
+    Loader2,
+    AlertCircle
+} from 'lucide-react';
 import { useAuthStore } from '../stores/auth.store';
 import { usePatients } from '../hooks/usePatients';
 import { useProfessionals } from '../hooks/useProfessionals';
@@ -35,7 +44,7 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
     const { data: patientsRes } = usePatients({ limit: 100 });
     const { data: professionals = [] } = useProfessionals();
     const { data: sites = [] } = useSites();
-    const { mutate: createAppointment, isPending } = useCreateAppointment();
+    const { mutate: createAppointment, isPending, error: serverError } = useCreateAppointment();
 
     const patients = (patientsRes as any)?.data || [];
 
@@ -52,9 +61,13 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
     useEffect(() => {
         if (isOpen) {
             reset({
+                patientId: '',
+                professionalId: '',
                 date: format(new Date(), 'yyyy-MM-dd'),
+                time: '',
                 duration: 15,
-                siteId: selectedSiteId || ''
+                siteId: selectedSiteId || '',
+                notes: ''
             });
         }
     }, [isOpen, selectedSiteId, reset]);
@@ -175,11 +188,19 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
                                     <Clock size={14} className="text-indigo-500" /> Hora
                                 </label>
-                                <input
-                                    type="time"
+                                <select
                                     {...register('time')}
                                     className="input-premium bg-slate-50 border-slate-100 hover:border-indigo-200 focus:bg-white transition-all"
-                                />
+                                >
+                                    <option value="">Hora...</option>
+                                    {Array.from({ length: 24 * 4 }).map((_, i) => {
+                                        const h = Math.floor(i / 4).toString().padStart(2, '0');
+                                        const m = ((i % 4) * 15).toString().padStart(2, '0');
+                                        const time = `${h}:${m}`;
+                                        return <option key={time} value={time}>{time}</option>;
+                                    })}
+                                </select>
+                                {errors.time && <span className="text-rose-500 text-[10px] font-bold mt-2 block ml-1 uppercase tracking-wider">{errors.time.message}</span>}
                             </div>
                             <div>
                                 <label className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">
@@ -209,6 +230,19 @@ export default function AppointmentModal({ isOpen, onClose, type }: AppointmentM
                             />
                         </div>
                     </div>
+
+                    {/* Server Error Display */}
+                    {serverError && (
+                        <div className="mt-8 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-xs font-bold text-rose-700 uppercase tracking-wider mb-1">Error de Servidor</p>
+                                <p className="text-sm text-rose-600 font-medium leading-relaxed">
+                                    {(serverError as any)?.response?.data?.message || (serverError as any).message || 'Ocurrió un error inesperado al agendar el turno.'}
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-12 flex gap-4">
                         <button
