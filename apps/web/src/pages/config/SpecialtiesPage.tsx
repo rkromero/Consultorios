@@ -63,52 +63,55 @@ export default function SpecialtiesPage() {
     );
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold">Especialidades ({specialties?.length || 0})</h2>
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-800">Especialidades</h2>
+                    <p className="text-xs text-slate-500 font-medium">{specialties?.length || 0} registradas en total</p>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-700 text-sm"
+                    className="btn-primary"
                 >
-                    <Plus size={16} />
+                    <Plus size={18} />
                     Nueva Especialidad
                 </button>
             </div>
 
             {/* List of Specialties */}
-            <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-100 max-w-2xl">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="card-premium p-0 overflow-hidden">
+                <table className="min-w-full divide-y divide-slate-100">
+                    <thead className="bg-slate-50/50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nombre</th>
+                            <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-slate-100">
                         {specialties?.map((specialty: any) => (
-                            <tr key={specialty.id}>
+                            <tr key={specialty.id} className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-3">
-                                        <div className="bg-blue-50 p-2 rounded-full">
-                                            <Stethoscope size={16} className="text-blue-500" />
+                                        <div className="bg-indigo-50 p-2 rounded-xl">
+                                            <Stethoscope size={18} className="text-indigo-600" />
                                         </div>
-                                        <span className="text-sm font-medium text-gray-900">{specialty.name}</span>
+                                        <span className="text-sm font-semibold text-slate-700">{specialty.name}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button
                                         onClick={() => handleDelete(specialty.id)}
-                                        className="text-red-600 hover:text-red-900 flex items-center gap-1 justify-end w-full"
+                                        className="text-slate-300 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-lg inline-flex"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={18} />
                                     </button>
                                 </td>
                             </tr>
                         ))}
                         {specialties?.length === 0 && (
                             <tr>
-                                <td colSpan={2} className="px-6 py-10 text-center text-gray-500">
-                                    No hay especialidades registradas.
+                                <td colSpan={2} className="px-6 py-12 text-center">
+                                    <p className="text-sm text-slate-400 font-medium">No hay especialidades registradas.</p>
                                 </td>
                             </tr>
                         )}
@@ -118,27 +121,37 @@ export default function SpecialtiesPage() {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                        <h3 className="text-lg font-bold mb-4">Nueva Especialidad</h3>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl transform transition-all border border-slate-100">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-indigo-100 p-2 rounded-xl">
+                                <Stethoscope size={24} className="text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800">Nueva Especialidad</h3>
+                        </div>
+
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                                <input {...register('name')} className="mt-1 block w-full border rounded-md p-2" placeholder="Ej: Kinesiología" />
-                                {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Nombre de la Especialidad</label>
+                                <input
+                                    {...register('name')}
+                                    className="input-premium py-3"
+                                    placeholder="Ej: Kinesiología, Odontología..."
+                                />
+                                {errors.name && <span className="text-red-500 text-xs mt-1 font-medium block">{errors.name.message}</span>}
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-2">
+                            <div className="flex justify-end gap-3 pt-4 border-t border-slate-50">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                    className="btn-secondary"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="btn-primary px-8"
                                 >
                                     Guardar
                                 </button>

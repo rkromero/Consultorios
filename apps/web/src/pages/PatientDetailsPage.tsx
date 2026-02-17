@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Phone, Mail, Calendar, MapPin, FileText, Plus, Clock } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, Calendar, MapPin, FileText, Plus, Clock } from 'lucide-react';
 import { usePatient } from '../hooks/usePatients';
 import { useMedicalNotes, useCreateMedicalNote } from '../hooks/useMedicalNotes';
 import { format } from 'date-fns';
@@ -54,144 +54,180 @@ export default function PatientDetailsPage() {
     if (!patient) return <div className="p-6">Paciente no encontrado</div>;
 
     return (
-        <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex flex-col h-full overflow-hidden bg-slate-50/50">
             {/* Header */}
-            <div className="bg-white border-b p-4 flex items-center gap-4 shadow-sm z-10">
-                <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-700">
-                    <ArrowLeft size={20} />
-                </button>
-                <div>
-                    <h1 className="text-xl font-bold text-gray-800">{patient.firstName} {patient.lastName}</h1>
-                    <p className="text-xs text-gray-500">DNI: {patient.dni}</p>
+            <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between shadow-sm z-10 shrink-0">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="p-2 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-indigo-600 transition-all border border-transparent hover:border-slate-100"
+                    >
+                        <ArrowLeft size={20} />
+                    </button>
+                    <div>
+                        <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none mb-1">{patient.firstName} {patient.lastName}</h1>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-1.5 py-0.5 rounded">DNI: {patient.dni}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button className="btn-secondary py-2">Editar Datos</button>
+                    <button className="btn-primary py-2 px-6">Nuevo Turno</button>
                 </div>
             </div>
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar Info */}
-                <div className="w-80 bg-white border-r p-6 overflow-y-auto hidden md:block">
-                    <h3 className="text-sm font-bold text-gray-500 uppercase mb-4">Información Personal</h3>
-
-                    <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                            <User size={18} className="text-gray-400 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-medium text-gray-700">Nombre Completo</p>
-                                <p className="text-sm text-gray-600">{patient.firstName} {patient.lastName}</p>
-                            </div>
+                <div className="w-80 bg-white border-r border-slate-200 p-6 overflow-y-auto hidden md:block">
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="w-24 h-24 rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-3xl font-bold border-4 border-white shadow-xl mb-4">
+                            {patient.firstName[0]}{patient.lastName[0]}
                         </div>
-                        <div className="flex items-start gap-3">
-                            <Calendar size={18} className="text-gray-400 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-medium text-gray-700">Fecha de Nacimiento</p>
-                                <p className="text-sm text-gray-600">
-                                    {patient.birthDate ? format(new Date(patient.birthDate), 'dd/MM/yyyy') : '-'}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <Phone size={18} className="text-gray-400 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-medium text-gray-700">Teléfono</p>
-                                <p className="text-sm text-gray-600">{patient.phone || '-'}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <Mail size={18} className="text-gray-400 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-medium text-gray-700">Email</p>
-                                <p className="text-sm text-gray-600">{patient.email || '-'}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <MapPin size={18} className="text-gray-400 mt-0.5" />
-                            <div>
-                                <p className="text-sm font-medium text-gray-700">Dirección</p>
-                                <p className="text-sm text-gray-600">{patient.address || '-'}</p>
-                            </div>
-                        </div>
+                        <h3 className="text-sm font-bold text-slate-900 mb-1 leading-tight">{patient.firstName} {patient.lastName}</h3>
+                        <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Paciente Activo</p>
                     </div>
 
-                    {/* Last 5 Appointments could go here if fetched */}
+                    <div className="space-y-6">
+                        <div>
+                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Datos del Paciente</h4>
+                            <div className="space-y-4">
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-slate-50 rounded-lg">
+                                        <Calendar size={16} className="text-slate-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-1">Nacimiento</p>
+                                        <p className="text-sm font-semibold text-slate-700">
+                                            {patient.birthDate ? format(new Date(patient.birthDate), 'dd/MM/yyyy') : '-'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-slate-50 rounded-lg">
+                                        <Phone size={16} className="text-slate-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-1">Celular</p>
+                                        <p className="text-sm font-semibold text-slate-700">{patient.phone || '-'}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-slate-50 rounded-lg">
+                                        <Mail size={16} className="text-slate-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-1">Email</p>
+                                        <p className="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{patient.email || '-'}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-slate-50 rounded-lg">
+                                        <MapPin size={16} className="text-slate-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none mb-1">Dirección</p>
+                                        <p className="text-sm font-semibold text-slate-700 leading-snug">{patient.address || '-'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-slate-100">
+                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Administración</h4>
+                            <button className="w-full flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm mb-2 uppercase tracking-wider">
+                                <span>Ver Facturación</span>
+                                <FileText size={14} className="text-slate-400" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Clinical History */}
-                <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-lg font-bold flex items-center gap-2">
-                                <FileText className="text-blue-600" />
-                                Historia Clínica
-                            </h2>
+                <div className="flex-1 overflow-y-auto p-4 lg:p-8">
+                    <div className="max-w-4xl mx-auto space-y-8">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                    <div className="bg-indigo-600 p-2 rounded-xl text-white">
+                                        <FileText size={20} />
+                                    </div>
+                                    Historia Clínica
+                                </h2>
+                                <p className="text-xs text-slate-500 font-medium ml-11">Registro cronológico de evoluciones médicas</p>
+                            </div>
                             <button
                                 onClick={() => setIsAddingNote(true)}
-                                className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-2 hover:bg-blue-700 shadow-sm"
+                                className="btn-primary"
                             >
-                                <Plus size={16} /> Nueva Evolución
+                                <Plus size={18} /> Nueva Evolución
                             </button>
                         </div>
 
                         {isAddingNote && (
-                            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 mb-6 animate-in fade-in slide-in-from-top-2">
-                                <h3 className="text-sm font-bold mb-2 text-gray-700">Nueva Nota de Evolución</h3>
+                            <div className="card-premium p-6 border-indigo-200 shadow-lg shadow-indigo-50 mb-8 animate-in fade-in slide-in-from-top-2">
+                                <h3 className="text-xs font-bold uppercase tracking-widest mb-4 text-indigo-600">Nueva Nota de Evolución</h3>
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <textarea
                                         {...register('content')}
-                                        className="w-full p-3 border rounded-md min-h-[100px] focus:ring-2 focus:ring-blue-100 outline-none text-sm"
-                                        placeholder="Escriba la evolución del paciente..."
+                                        className="input-premium min-h-[150px] py-4 text-sm"
+                                        placeholder="Escriba la evolución del paciente, diagnósticos, tratamientos..."
                                         autoFocus
                                     />
 
-                                    <div className="mt-3">
-                                        <label className="flex items-center gap-2 text-blue-600 hover:text-blue-700 cursor-pointer text-sm font-medium">
-                                            <Plus size={16} />
-                                            <span>Adjuntar archivos (Imágenes, PDF, etc.)</span>
-                                            <input
-                                                type="file"
-                                                multiple
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    if (e.target.files) {
-                                                        setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)]);
-                                                    }
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <div>
+                                            <label className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 cursor-pointer text-xs font-bold uppercase tracking-wider transition-colors">
+                                                <Plus size={16} />
+                                                <span>Adjuntar archivos</span>
+                                                <input
+                                                    type="file"
+                                                    multiple
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        if (e.target.files) {
+                                                            setSelectedFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+
+                                            {selectedFiles.length > 0 && (
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {selectedFiles.map((file, idx) => (
+                                                        <div key={idx} className="bg-gray-100 px-2 py-1 rounded text-xs flex items-center gap-2">
+                                                            <span className="truncate max-w-[150px]">{file.name}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))}
+                                                                className="text-red-500 hover:text-red-700"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-end gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setIsAddingNote(false);
+                                                    setSelectedFiles([]);
                                                 }}
-                                            />
-                                        </label>
-
-                                        {selectedFiles.length > 0 && (
-                                            <div className="mt-2 flex flex-wrap gap-2">
-                                                {selectedFiles.map((file, idx) => (
-                                                    <div key={idx} className="bg-gray-100 px-2 py-1 rounded text-xs flex items-center gap-2">
-                                                        <span className="truncate max-w-[150px]">{file.name}</span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setSelectedFiles(prev => prev.filter((_, i) => i !== idx))}
-                                                            className="text-red-500 hover:text-red-700"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="flex justify-end gap-2 mt-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setIsAddingNote(false);
-                                                setSelectedFiles([]);
-                                            }}
-                                            className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded text-sm"
-                                        >
-                                            Cancelar
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                                        >
-                                            Guardar Nota
-                                        </button>
+                                                className="btn-secondary"
+                                            >
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="btn-primary px-8"
+                                            >
+                                                Guardar Nota
+                                            </button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -199,54 +235,59 @@ export default function PatientDetailsPage() {
 
                         <div className="space-y-6">
                             {isLoadingNotes ? (
-                                <p className="text-center text-gray-500 py-4">Cargando historia...</p>
+                                <p className="text-center text-slate-400 py-8 animate-pulse text-sm font-medium italic">Sincronizando registros médicos...</p>
                             ) : notes?.length === 0 ? (
-                                <div className="text-center py-10 bg-white rounded-lg border border-dashed border-gray-300">
-                                    <FileText className="mx-auto h-10 w-10 text-gray-300 mb-2" />
-                                    <p className="text-gray-500">No hay registros en la historia clínica.</p>
-                                    <button onClick={() => setIsAddingNote(true)} className="text-blue-600 text-sm mt-1 hover:underline">
-                                        Crear primera nota
-                                    </button>
+                                <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                                    <FileText className="mx-auto h-12 w-12 text-slate-200 mb-4" />
+                                    <p className="text-slate-500 font-medium bg-slate-50 inline-block px-4 py-1.5 rounded-full text-sm mb-4">La historia clínica está vacía</p>
+                                    <div className="block">
+                                        <button onClick={() => setIsAddingNote(true)} className="text-indigo-600 font-bold text-xs uppercase tracking-widest hover:text-indigo-800 transition-colors">
+                                            Crear Nota de Evolución
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 notes?.map((note: any) => (
-                                    <div key={note.id} className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 relative">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">
+                                    <div key={note.id} className="card-premium p-6 hover:border-indigo-100 transition-all group">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold border border-indigo-100 text-sm shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
                                                     {note.author?.tenantUser?.user?.fullName[0]}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-gray-900">{note.author?.tenantUser?.user?.fullName}</p>
-                                                    <p className="text-xs text-blue-600">{note.author?.specialty?.name || 'Profesional'}</p>
+                                                    <p className="text-sm font-bold text-slate-900 leading-tight uppercase tracking-tight">{note.author?.tenantUser?.user?.fullName}</p>
+                                                    <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-1.5 py-0.5 rounded-md mt-1 inline-block">{note.author?.specialty?.name || 'Profesional'}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center text-xs text-gray-400 gap-1">
-                                                <Clock size={12} />
+                                            <div className="flex items-center text-[11px] text-slate-400 font-bold uppercase tracking-widest bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
+                                                <Clock size={12} className="mr-1.5 text-slate-300" />
                                                 {format(new Date(note.date), "d 'de' MMMM, yyyy - HH:mm", { locale: es })}
                                             </div>
                                         </div>
-                                        <div className="pl-10">
-                                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-                                                {note.content}
-                                            </p>
+                                        <div className="pl-1 flex gap-4">
+                                            <div className="w-0.5 bg-slate-100 rounded-full my-1 group-hover:bg-indigo-100 transition-colors" />
+                                            <div className="flex-1">
+                                                <p className="text-slate-700 whitespace-pre-wrap leading-relaxed text-[15px] font-medium">
+                                                    {note.content}
+                                                </p>
 
-                                            {note.attachments && note.attachments.length > 0 && (
-                                                <div className="mt-4 flex flex-wrap gap-3">
-                                                    {note.attachments.map((att: any) => (
-                                                        <a
-                                                            key={att.id}
-                                                            href={att.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-2 p-2 bg-blue-50 text-blue-700 rounded-lg text-xs hover:bg-blue-100 transition shadow-sm"
-                                                        >
-                                                            <FileText size={14} />
-                                                            <span className="truncate max-w-[120px]">{att.filename}</span>
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            )}
+                                                {note.attachments && note.attachments.length > 0 && (
+                                                    <div className="mt-6 flex flex-wrap gap-2">
+                                                        {note.attachments.map((att: any) => (
+                                                            <a
+                                                                key={att.id}
+                                                                href={att.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center gap-2.5 px-3 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition-all border border-slate-100 shadow-sm group/file"
+                                                            >
+                                                                <FileText size={16} className="text-slate-300 group-hover/file:text-indigo-500 transition-colors" />
+                                                                <span className="truncate max-w-[150px] uppercase tracking-tighter">{att.filename}</span>
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))

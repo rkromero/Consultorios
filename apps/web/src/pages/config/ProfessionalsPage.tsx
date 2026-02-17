@@ -68,30 +68,43 @@ export default function ProfessionalsPage() {
     );
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold">Profesionales ({professionals?.length || 0})</h2>
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-800">Profesionales</h2>
+                    <p className="text-xs text-slate-500 font-medium">{professionals?.length || 0} registrados en total</p>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-700 text-sm"
+                    className="btn-primary"
                 >
-                    <Plus size={16} />
+                    <Plus size={18} />
                     Nuevo Profesional
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {professionals?.map((prof: any) => (
-                    <div key={prof.id} className="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-start gap-4">
-                        <div className="bg-blue-100 p-3 rounded-full flex items-center justify-center">
-                            <Stethoscope size={24} className="text-blue-600" />
+                    <div key={prof.id} className="card-premium flex items-start gap-4 hover:border-indigo-200 transition-colors group relative">
+                        <div className="bg-indigo-50 p-3 rounded-2xl group-hover:bg-indigo-100 transition-colors">
+                            <Stethoscope size={28} className="text-indigo-600" />
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-gray-900">{prof.tenantUser?.user?.fullName || 'Usuario'}</h3>
-                            <p className="text-sm text-gray-500">{prof.specialty?.name || 'Sin especialidad'}</p>
-                            {prof.licenseNumber && (
-                                <p className="text-xs text-gray-400 mt-1">MN: {prof.licenseNumber}</p>
-                            )}
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-slate-900 truncate">{prof.tenantUser?.user?.fullName || 'Usuario'}</h3>
+                            <p className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">{prof.specialty?.name || 'Sin especialidad'}</p>
+
+                            <div className="space-y-1">
+                                {prof.licenseNumber && (
+                                    <p className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                                        <div className="w-1 h-1 rounded-full bg-slate-200" />
+                                        MN: {prof.licenseNumber}
+                                    </p>
+                                )}
+                                <p className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                                    <div className="w-1 h-1 rounded-full bg-slate-200" />
+                                    {prof.tenantUser?.user?.email}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -99,61 +112,68 @@ export default function ProfessionalsPage() {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                        <h3 className="text-lg font-bold mb-4">Nuevo Profesional</h3>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl transform transition-all border border-slate-100">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-indigo-100 p-2 rounded-xl">
+                                <Stethoscope size={24} className="text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800">Nuevo Profesional</h3>
+                        </div>
+
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                                    <input {...register('firstName')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.firstName && <span className="text-red-500 text-sm">{errors.firstName.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre</label>
+                                    <input {...register('firstName')} className="input-premium" placeholder="Ej: Juan" />
+                                    {errors.firstName && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.firstName.message}</span>}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Apellido</label>
-                                    <input {...register('lastName')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.lastName && <span className="text-red-500 text-sm">{errors.lastName.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Apellido</label>
+                                    <input {...register('lastName')} className="input-premium" placeholder="Ej: Perez" />
+                                    {errors.lastName && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.lastName.message}</span>}
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Email (Acceso al sistema)</label>
-                                <input {...register('email')} type="email" className="mt-1 block w-full border rounded-md p-2" placeholder="profesional@ejemplo.com" />
-                                {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email (Acceso al sistema)</label>
+                                <input {...register('email')} type="email" className="input-premium" placeholder="profesional@ejemplo.com" />
+                                {errors.email && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.email.message}</span>}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Celular</label>
+                                    <input {...register('phone')} className="input-premium" placeholder="Ej: 11223344" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Matrícula (MN)</label>
+                                    <input {...register('licenseNumber')} className="input-premium" placeholder="Ej: 123456" />
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Celular</label>
-                                <input {...register('phone')} className="mt-1 block w-full border rounded-md p-2" />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Especialidad</label>
-                                <select {...register('specialtyId')} className="mt-1 block w-full border rounded-md p-2 bg-white">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Especialidad</label>
+                                <select {...register('specialtyId')} className="input-premium appearance-none bg-white">
                                     <option value="">Seleccionar Especialidad</option>
                                     {specialties?.map((spec: any) => (
                                         <option key={spec.id} value={spec.id}>{spec.name}</option>
                                     ))}
                                 </select>
-                                {errors.specialtyId && <span className="text-red-500 text-sm">{errors.specialtyId.message}</span>}
+                                {errors.specialtyId && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.specialtyId.message}</span>}
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Matrícula (Opcional)</label>
-                                <input {...register('licenseNumber')} className="mt-1 block w-full border rounded-md p-2" />
-                            </div>
-
-                            <div className="flex justify-end gap-2 pt-2">
+                            <div className="flex justify-end gap-3 pt-6 border-t border-slate-50">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                    className="btn-secondary"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="btn-primary px-8"
                                 >
                                     Guardar
                                 </button>

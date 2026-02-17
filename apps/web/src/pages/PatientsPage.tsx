@@ -58,12 +58,15 @@ export default function PatientsPage() {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Pacientes</h1>
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div>
+                    <h1 className="text-xl font-bold text-slate-800">Directorio de Pacientes</h1>
+                    <p className="text-xs text-slate-500 font-medium">{response?.meta?.total || 0} pacientes registrados</p>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-700 font-medium"
+                    className="btn-primary"
                 >
                     <Plus size={18} />
                     Nuevo Paciente
@@ -71,12 +74,12 @@ export default function PatientsPage() {
             </div>
 
             {/* Search Bar */}
-            <div className="mb-6 relative max-w-md">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+            <div className="relative max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
                 <input
                     type="text"
                     placeholder="Buscar por nombre, DNI o email..."
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="input-premium pl-11 py-3"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
@@ -86,52 +89,54 @@ export default function PatientsPage() {
             {isLoading ? (
                 <div>Cargando pacientes...</div>
             ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                <div className="card-premium p-0 overflow-hidden border-slate-200">
+                    <table className="min-w-full divide-y divide-slate-100">
+                        <thead className="bg-slate-50/50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DNI</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Paciente</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">DNI</th>
+                                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contacto</th>
+                                <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y divide-slate-50">
                             {response?.data?.map((patient: any) => (
-                                <tr key={patient.id} className="hover:bg-gray-50">
+                                <tr key={patient.id} className="hover:bg-slate-50/50 transition-colors group">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
-                                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                            <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border-2 border-white shadow-sm">
                                                 {patient.firstName[0]}{patient.lastName[0]}
                                             </div>
                                             <div className="ml-4">
-                                                <div className="text-sm font-medium text-gray-900">{patient.firstName} {patient.lastName}</div>
-                                                <div className="text-sm text-gray-500 flex items-center gap-1">
+                                                <div className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{patient.firstName} {patient.lastName}</div>
+                                                <div className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
                                                     {patient.birthDate && format(new Date(patient.birthDate), 'dd/MM/yyyy')}
                                                     {patient.gender && ` • ${patient.gender}`}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-600">
                                         {patient.dni}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                                         {patient.email && (
-                                            <div className="flex items-center gap-1 mb-1">
-                                                <Mail size={14} /> {patient.email}
+                                            <div className="flex items-center gap-1.5 mb-0.5">
+                                                <Mail size={14} className="text-slate-300" />
+                                                <span className="text-xs font-medium text-slate-500">{patient.email}</span>
                                             </div>
                                         )}
                                         {patient.phone && (
-                                            <div className="flex items-center gap-1">
-                                                <Phone size={14} /> {patient.phone}
+                                            <div className="flex items-center gap-1.5">
+                                                <Phone size={14} className="text-slate-300" />
+                                                <span className="text-xs font-medium text-slate-500">{patient.phone}</span>
                                             </div>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                                         <button
                                             onClick={() => navigate(`/dashboard/pacientes/${patient.id}`)}
-                                            className="text-blue-600 hover:text-blue-900"
+                                            className="text-indigo-600 hover:text-indigo-800 font-bold text-xs uppercase tracking-wider"
                                         >
                                             Ver Ficha
                                         </button>
@@ -140,8 +145,13 @@ export default function PatientsPage() {
                             ))}
                             {response?.data?.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-10 text-center text-gray-500">
-                                        No se encontraron pacientes.
+                                    <td colSpan={4} className="px-6 py-12 text-center">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="bg-slate-50 p-3 rounded-full">
+                                                <Search size={24} className="text-slate-300" />
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-400">No se encontraron pacientes registrados.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -175,56 +185,61 @@ export default function PatientsPage() {
 
             {/* Create Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full shadow-xl">
-                        <h3 className="text-xl font-bold mb-6">Nuevo Paciente</h3>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl border border-slate-100">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-indigo-100 p-2 rounded-xl">
+                                <Plus size={24} className="text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800">Nuevo Paciente</h3>
+                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Nombre *</label>
-                                    <input {...register('firstName')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.firstName && <span className="text-red-500 text-sm">{errors.firstName.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre *</label>
+                                    <input {...register('firstName')} className="input-premium" placeholder="Ej: Juan" />
+                                    {errors.firstName && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.firstName.message}</span>}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Apellido *</label>
-                                    <input {...register('lastName')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.lastName && <span className="text-red-500 text-sm">{errors.lastName.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Apellido *</label>
+                                    <input {...register('lastName')} className="input-premium" placeholder="Ej: Perez" />
+                                    {errors.lastName && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.lastName.message}</span>}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">DNI *</label>
-                                    <input {...register('dni')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.dni && <span className="text-red-500 text-sm">{errors.dni.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">DNI *</label>
+                                    <input {...register('dni')} className="input-premium" placeholder="Solo números" />
+                                    {errors.dni && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.dni.message}</span>}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                                    <input type="date" {...register('birthDate')} className="mt-1 block w-full border rounded-md p-2" />
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Fecha de Nacimiento</label>
+                                    <input type="date" {...register('birthDate')} className="input-premium" />
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Teléfono</label>
-                                    <input {...register('phone')} className="mt-1 block w-full border rounded-md p-2" />
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Teléfono</label>
+                                    <input {...register('phone')} className="input-premium" placeholder="Ej: 11223344" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Email</label>
-                                    <input type="email" {...register('email')} className="mt-1 block w-full border rounded-md p-2" />
-                                    {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
+                                    <input type="email" {...register('email')} className="input-premium" placeholder="ejemplo@correo.com" />
+                                    {errors.email && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.email.message}</span>}
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Dirección</label>
-                                <input {...register('address')} className="mt-1 block w-full border rounded-md p-2" />
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Dirección</label>
+                                <input {...register('address')} className="input-premium" placeholder="Calle, Número, Ciudad" />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Género</label>
-                                <select {...register('gender')} className="mt-1 block w-full border rounded-md p-2 bg-white">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Género</label>
+                                <select {...register('gender')} className="input-premium appearance-none bg-white">
                                     <option value="">Seleccionar...</option>
                                     <option value="M">Masculino</option>
                                     <option value="F">Femenino</option>
@@ -232,17 +247,17 @@ export default function PatientsPage() {
                                 </select>
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+                            <div className="flex justify-end gap-3 pt-6 border-t border-slate-50">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                    className="btn-secondary"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="btn-primary px-8"
                                 >
                                     Guardar Paciente
                                 </button>

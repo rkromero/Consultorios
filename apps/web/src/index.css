@@ -7,16 +7,32 @@
 @layer base {
     body {
         font-family: 'Inter', sans-serif;
-        @apply bg-gray-50 text-gray-900;
+        @apply bg-slate-100 text-slate-900 antialiased;
     }
 }
 
 @layer components {
     .btn-primary {
-        @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium flex items-center gap-2;
+        @apply bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm font-medium flex items-center gap-2 active:scale-95;
     }
 
-    .card {
-        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    .btn-secondary {
+        @apply bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-all duration-200 shadow-sm font-medium flex items-center gap-2 active:scale-95;
+    }
+
+    .btn-warning {
+        @apply bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-sm font-medium flex items-center gap-2 active:scale-95;
+    }
+
+    .card-premium {
+        @apply bg-white rounded-xl shadow-premium border border-slate-200 p-6;
+    }
+
+    .input-premium {
+        @apply block w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all bg-white outline-none;
+    }
+
+    .badge {
+        @apply px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
     }
 }

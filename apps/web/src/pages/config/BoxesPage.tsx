@@ -37,43 +37,46 @@ export default function BoxesPage() {
     if (isLoading) return <div>Cargando consultorios...</div>;
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold">Consultorios ({boxes?.length || 0})</h2>
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-800">Consultorios</h2>
+                    <p className="text-xs text-slate-500 font-medium">{boxes?.length || 0} unidades registradas</p>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-700 text-sm"
+                    className="btn-primary"
                 >
-                    <Plus size={16} />
+                    <Plus size={18} />
                     Nuevo Consultorio
                 </button>
             </div>
 
             {/* Grid of Boxes */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {boxes?.map((box: any) => (
-                    <div key={box.id} className="bg-white p-4 rounded-lg shadow border border-gray-100 flex flex-col justify-between">
-                        <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <BoxIcon className="text-blue-500" size={20} />
-                                    <h3 className="font-semibold text-gray-900">{box.name}</h3>
+                    <div key={box.id} className="card-premium flex flex-col hover:border-indigo-200 transition-all group">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-indigo-50 p-2.5 rounded-xl group-hover:bg-indigo-100 transition-colors">
+                                    <BoxIcon className="text-indigo-600" size={24} />
                                 </div>
+                                <h3 className="font-bold text-slate-900 leading-tight">{box.name}</h3>
                             </div>
-
-                            <div className="text-sm text-gray-500 flex items-center gap-2 mt-2">
-                                <Building size={14} />
-                                {box.site?.name || 'Sede desconocida'}
-                            </div>
+                            {box.active ? (
+                                <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Activo</span>
+                            ) : (
+                                <span className="bg-slate-50 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Inactivo</span>
+                            )}
                         </div>
 
-                        <div className="mt-4 pt-3 border-t flex justify-between items-center">
-                            {box.active ? (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Activo</span>
-                            ) : (
-                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">Inactivo</span>
-                            )}
-                            <button className="text-sm text-blue-600 hover:underline">Editar</button>
+                        <div className="text-sm font-medium text-slate-500 flex items-center gap-2 mt-2">
+                            <Building size={16} className="text-slate-300" />
+                            {box.site?.name || 'Sede desconocida'}
+                        </div>
+
+                        <div className="mt-6 pt-4 border-t border-slate-50 flex justify-end">
+                            <button className="text-xs font-bold text-indigo-500 hover:text-indigo-700 transition-colors uppercase">Editar Detalles</button>
                         </div>
                     </div>
                 ))}
@@ -81,38 +84,44 @@ export default function BoxesPage() {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                        <h3 className="text-lg font-bold mb-4">Nuevo Consultorio</h3>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-slate-100">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-indigo-100 p-2 rounded-xl">
+                                <BoxIcon size={24} className="text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800">Nuevo Consultorio</h3>
+                        </div>
+
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Nombre</label>
-                                <input {...register('name')} className="mt-1 block w-full border rounded-md p-2" placeholder="Ej: Consultorio 1" />
-                                {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre del Consultorio</label>
+                                <input {...register('name')} className="input-premium" placeholder="Ej: Consultorio 1" />
+                                {errors.name && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.name.message}</span>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Sede</label>
-                                <select {...register('siteId')} className="mt-1 block w-full border rounded-md p-2 bg-white">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Sede Responsable</label>
+                                <select {...register('siteId')} className="input-premium appearance-none bg-white">
                                     <option value="">Seleccionar Sede</option>
                                     {sites?.map((site: any) => (
                                         <option key={site.id} value={site.id}>{site.name}</option>
                                     ))}
                                 </select>
-                                {errors.siteId && <span className="text-red-500 text-sm">{errors.siteId.message}</span>}
+                                {errors.siteId && <span className="text-red-500 text-[10px] font-bold mt-1">{errors.siteId.message}</span>}
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-2">
+                            <div className="flex justify-end gap-3 pt-6 border-t border-slate-50">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                    className="btn-secondary"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="btn-primary px-8"
                                 >
                                     Guardar
                                 </button>

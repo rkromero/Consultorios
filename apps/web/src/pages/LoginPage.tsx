@@ -5,10 +5,11 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { useAuthStore } from '../stores/auth.store';
+import { Activity } from 'lucide-react';
 
 const loginSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6)
+    email: z.string().email("Email inválido"),
+    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
 });
 
 type LoginInputs = z.infer<typeof loginSchema>;
@@ -26,12 +27,6 @@ export default function LoginPage() {
         try {
             const res = await api.post('/auth/login', data);
             setLogin(res.data.token, res.data.user, res.data.tenants);
-
-            // If only one tenant, auto-select? For now, go to selection screen
-            if (res.data.tenants.length === 1) {
-                // Auto-select logic could go here, calling another API or just redirecting
-                // But let's stick to flow: Login -> Select Org -> Dashboard
-            }
             navigate('/select-organization');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
@@ -39,45 +34,74 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
+            {/* Abstract Background Shapes */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-100/50 rounded-full blur-[120px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-100/50 rounded-full blur-[120px]" />
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {error}
+            <div className="max-w-md w-full relative">
+                <div className="flex flex-col items-center mb-10">
+                    <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-xl shadow-indigo-100 mb-4">
+                        <Activity size={32} />
                     </div>
-                )}
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">Unión Salud</h1>
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Sistema de Gestión Médica</p>
+                </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            {...register('email')}
-                            type="email"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                        />
-                        {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
+                <div className="card-premium p-10 bg-white/80 backdrop-blur-xl border-white/50 shadow-2xl">
+                    <h2 className="text-xl font-bold text-slate-800 mb-8 text-center">Acceso al Panel</h2>
+
+                    {error && (
+                        <div className="bg-rose-50 border border-rose-100 text-rose-600 px-4 py-3 rounded-xl mb-6 text-xs font-bold uppercase tracking-wider text-center animate-in fade-in zoom-in-95">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Corporativo</label>
+                            <input
+                                {...register('email')}
+                                type="email"
+                                placeholder="ejemplo@unionsalud.com"
+                                className="input-premium bg-white/50"
+                            />
+                            {errors.email && <span className="text-rose-500 text-[10px] font-bold mt-1 uppercase tracking-wider ml-1">{errors.email.message}</span>}
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Contraseña</label>
+                            <input
+                                {...register('password')}
+                                type="password"
+                                placeholder="••••••••"
+                                className="input-premium bg-white/50"
+                            />
+                            {errors.password && <span className="text-rose-500 text-[10px] font-bold mt-1 uppercase tracking-wider ml-1">{errors.password.message}</span>}
+                        </div>
+
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="btn-primary w-full py-3.5 shadow-xl shadow-indigo-100"
+                            >
+                                {isSubmitting ? 'Verificando...' : 'Iniciar Sesión'}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div className="mt-8 pt-8 border-t border-slate-100 text-center">
+                        <p className="text-xs text-slate-400 font-medium">¿Problemas con su acceso?</p>
+                        <button className="text-indigo-600 text-[10px] font-bold uppercase tracking-widest mt-1 hover:text-indigo-800 transition-colors">
+                            Contactar Soporte IT
+                        </button>
                     </div>
+                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Contraseña</label>
-                        <input
-                            {...register('password')}
-                            type="password"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                        />
-                        {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {isSubmitting ? 'Cargando...' : 'Ingresar'}
-                    </button>
-                </form>
+                <p className="text-center mt-8 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                    &copy; 2024 Unión Salud &bull; v1.0.4
+                </p>
             </div>
         </div>
     );
