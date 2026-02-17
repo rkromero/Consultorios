@@ -51,9 +51,15 @@ export class PatientService {
     }
 
     async create(tenantId: string, data: any) {
+        // Clean data: convert empty strings to null
+        const cleanData: any = {};
+        for (const [key, value] of Object.entries(data)) {
+            cleanData[key] = value === '' ? null : value;
+        }
+
         // Check DNI uniqueness in tenant
         const existing = await prisma.patient.findFirst({
-            where: { tenantId, dni: data.dni }
+            where: { tenantId, dni: String(cleanData.dni) }
         });
 
         if (existing) {
@@ -62,7 +68,7 @@ export class PatientService {
 
         return prisma.patient.create({
             data: {
-                ...data,
+                ...cleanData,
                 tenantId
             }
         });

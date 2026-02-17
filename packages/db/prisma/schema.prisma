@@ -123,6 +123,7 @@ model Patient {
   email         String?
   phone         String?
   address       String?
+  gender        String?
   
   healthInsurance String?
   affiliateNumber String?

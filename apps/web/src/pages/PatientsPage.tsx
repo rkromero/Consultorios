@@ -34,19 +34,11 @@ export default function PatientsPage() {
     });
 
     const onSubmit = (data: PatientForm) => {
-        // Basic date handling if needed types require Date object or ISO string
-        // input type="date" returns YYYY-MM-DD string, usually fine if backend expects string or DateTime (Prisma can auto-parse ISO)
-        // If Prisma expects DateTime, we might need new Date(data.birthDate)
-
-        // For MVP, assuming backend accepts the string format or we parse it there, 
-        // but Prisma typically needs DateTime object for DateTime fields.
-        // Let's pass it as is and if fails we correct backend service.
-        // Actually, backend service creates prisma.create({ data }) directly. 
-        // Prisma Client expects Date object or ISO-8601 string. "2000-01-01" is ISO compliant enough usually.
-
         const payload = {
             ...data,
-            birthDate: data.birthDate ? new Date(data.birthDate).toISOString() : undefined
+            birthDate: data.birthDate && data.birthDate !== ''
+                ? new Date(data.birthDate).toISOString()
+                : undefined
         };
 
         createPatient.mutate(payload, {
