@@ -22,10 +22,7 @@ export class ProfessionalService {
                     }
                 }
             },
-            orderBy: [
-                { active: 'desc' },
-                { tenantUser: { user: { fullName: 'asc' } } }
-            ]
+            orderBy: { active: 'desc' }
         });
     }
 
