@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAppointments } from '../hooks/useAppointments';
+import { useAuthStore } from '../stores/auth.store';
 import { AppointmentType } from '../api/appointments.api';
 
 import AppointmentModal from '../components/AppointmentModal';
 
 export default function AgendaPage() {
+    const { selectedSiteId } = useAuthStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<AppointmentType>(AppointmentType.REGULAR);
@@ -27,6 +29,7 @@ export default function AgendaPage() {
     const { data: appointments = [], isLoading } = useAppointments({
         start: weekStart.toISOString(),
         end: addDays(weekEnd, 1).toISOString(), // Include all of Friday
+        siteId: selectedSiteId || undefined
     });
 
     const timeSlots = [

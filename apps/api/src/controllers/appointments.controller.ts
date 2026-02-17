@@ -1,11 +1,32 @@
 import { Request, Response } from 'express';
 import { AppointmentService } from '../services/appointments.service';
+import { Role } from '@clinica/db';
+import prisma from '../lib/prisma';
 
 const service = new AppointmentService();
 
 export const getAll = async (req: Request, res: Response) => {
     try {
-        const { start, end, professionalId, patientId, siteId } = req.query;
+        let { start, end, professionalId, patientId, siteId } = req.query;
+
+        // Force professionalId if user is a PROFESSIONAL
+        if (req.role === Role.PROFESSIONAL) {
+            const professional = await prisma.professional.findFirst({
+                where: {
+                    tenantUser: {
+                        userId: req.user!.id,
+                        tenantId: req.tenantId!
+                    }
+                }
+            });
+
+            if (professional) {
+                professionalId = professional.id;
+            } else {
+                // Return empty if professional profile not found but role is professional
+                return res.json([]);
+            }
+        }
 
         // Ensure dates are parsed if present
         const params = {

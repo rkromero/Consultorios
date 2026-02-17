@@ -33,6 +33,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         }
 
         req.user = user;
+        req.role = decoded.role;
 
         // If token has tenantId, enforce it matches header if present
         if (decoded.tenantId) {
