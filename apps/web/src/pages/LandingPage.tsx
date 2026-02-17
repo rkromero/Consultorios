@@ -59,7 +59,7 @@ export default function LandingPage() {
                         <span className="text-white font-bold text-xl">C</span>
                     </div>
                     <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        Consultorios
+                        SUPER SAS
                     </span>
                 </div>
                 <button
@@ -73,7 +73,7 @@ export default function LandingPage() {
             <div className="container mx-auto px-6 py-20">
                 <div className="max-w-4xl mx-auto text-center">
                     <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
-                        Gestiona tu consultorio con eficiencia
+                        SUPER SAS - Gestiona tu consultorio con eficiencia
                     </h1>
                     <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                         Sistema integral para la gestión de consultorios médicos. Agenda, pacientes, historias clínicas y facturación en una sola plataforma.
