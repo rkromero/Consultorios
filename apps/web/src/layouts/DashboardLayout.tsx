@@ -13,7 +13,9 @@ import {
     Menu,
     HeartPulse,
     Settings,
-    Building2
+    Building2,
+    Stethoscope,
+    UserCog
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -48,8 +50,10 @@ export default function DashboardLayout() {
         { to: "/dashboard", label: "Panel de Control", icon: LayoutGrid, end: true },
         { to: "/dashboard/agenda", label: "Agenda General", icon: Calendar },
         { to: "/dashboard/pacientes", label: "Directorio Pacientes", icon: Users },
+        { to: "/dashboard/profesionales", label: "Profesionales", icon: Stethoscope },
         { to: "/dashboard/caja", label: "Caja y Cobros", icon: Wallet },
         { to: "/dashboard/facturacion", label: "Facturación", icon: FileText, badge: 1 },
+        { to: "/dashboard/configuracion/usuarios", label: "Gestión de Usuarios", icon: UserCog },
         { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
     ];
 

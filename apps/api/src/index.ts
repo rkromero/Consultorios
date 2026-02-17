@@ -25,9 +25,11 @@ app.use('/api/specialties', specialtyRoutes);
 
 import professionalRoutes from './routes/professionals.routes';
 import patientRoutes from './routes/patients.routes';
+import userRoutes from './routes/users.routes';
 
 app.use('/api/professionals', professionalRoutes);
 app.use('/api/patients', patientRoutes);
+app.use('/api/users', userRoutes);
 
 import appointmentRoutes from './routes/appointments.routes';
 app.use('/api/appointments', appointmentRoutes);

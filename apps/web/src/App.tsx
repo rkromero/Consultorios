@@ -10,6 +10,7 @@ import SitesPage from './pages/config/SitesPage';
 import BoxesPage from './pages/config/BoxesPage';
 import SpecialtiesPage from './pages/config/SpecialtiesPage';
 import ProfessionalsPage from './pages/config/ProfessionalsPage';
+import UsersPage from './pages/config/UsersPage';
 import PatientsPage from './pages/PatientsPage';
 import AgendaPage from './pages/AgendaPage';
 import PatientDetailsPage from './pages/PatientDetailsPage';
@@ -53,8 +54,7 @@ function App() {
                             <Route path="sedes" element={<SitesPage />} />
                             <Route path="consultorios" element={<BoxesPage />} />
                             <Route path="especialidades" element={<SpecialtiesPage />} />
-
-                            <Route path="usuarios" element={<div className="p-4">Usuarios (WIP)</div>} />
+                            <Route path="usuarios" element={<UsersPage />} />
                         </Route>
                     </Route>
 
