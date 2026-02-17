@@ -46,12 +46,13 @@ function App() {
                         <Route path="pacientes" element={<PatientsPage />} />
                         <Route path="pacientes/:id" element={<PatientDetailsPage />} />
                         <Route path="facturacion" element={<InvoicesPage />} />
+                        <Route path="profesionales" element={<ProfessionalsPage />} />
                         <Route path="configuracion" element={<ConfigurationLayout />}>
                             <Route index element={<Navigate to="sedes" replace />} />
                             <Route path="sedes" element={<SitesPage />} />
                             <Route path="consultorios" element={<BoxesPage />} />
                             <Route path="especialidades" element={<SpecialtiesPage />} />
-                            <Route path="profesionales" element={<ProfessionalsPage />} />
+
                             <Route path="usuarios" element={<div className="p-4">Usuarios (WIP)</div>} />
                         </Route>
                     </Route>

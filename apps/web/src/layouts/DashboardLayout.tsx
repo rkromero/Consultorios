@@ -21,6 +21,7 @@ export default function DashboardLayout() {
         { to: "/dashboard", label: "Inicio", icon: LayoutDashboard, end: true },
         { to: "/dashboard/agenda", label: "Agenda", icon: Calendar },
         { to: "/dashboard/pacientes", label: "Pacientes", icon: Users },
+        { to: "/dashboard/profesionales", label: "Profesionales", icon: Building2 }, // Using Building2 or another icon
         { to: "/dashboard/configuracion", label: "Configuración", icon: Settings },
     ];
 
