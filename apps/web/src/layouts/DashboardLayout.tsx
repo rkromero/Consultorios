@@ -55,7 +55,7 @@ export default function DashboardLayout() {
                     <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
                         <HeartPulse className="w-6 h-6" />
                     </div>
-                    <h2 className="font-bold text-lg text-slate-800 tracking-tight uppercase">Unión Salud</h2>
+                    <h2 className="font-bold text-lg text-slate-800 tracking-tight uppercase">{tenant.name}</h2>
                 </div>
 
                 {/* Sede Selector */}
@@ -153,7 +153,7 @@ export default function DashboardLayout() {
                 <header className="lg:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
                     <div className="flex items-center gap-2">
                         <HeartPulse className="w-6 h-6 text-indigo-600" />
-                        <span className="font-bold text-slate-800">Unión Salud</span>
+                        <span className="font-bold text-slate-800">{tenant.name}</span>
                     </div>
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
