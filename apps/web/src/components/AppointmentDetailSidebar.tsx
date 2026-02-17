@@ -68,15 +68,23 @@ export default function AppointmentDetailSidebar({ appointment, isOpen, onClose 
         }
     }, [isOpen, resetMutation]);
 
+    useEffect(() => {
+        if (appointment) {
+            const start = parseISO(appointment.startTime);
+            const minutes = start.getMinutes();
+            const snappedMinutes = Math.round(minutes / 15) * 15;
+            const snappedTime = `${start.getHours().toString().padStart(2, '0')}:${(snappedMinutes % 60).toString().padStart(2, '0')}`;
+            setEditData({
+                status: appointment.status,
+                notes: appointment.notes || '',
+                date: format(start, 'yyyy-MM-dd'),
+                time: snappedTime,
+            });
+        }
+    }, [appointment]);
+
     const startEdit = () => {
         if (!appointment) return;
-        const start = parseISO(appointment.startTime);
-        setEditData({
-            status: appointment.status,
-            notes: appointment.notes || '',
-            date: format(start, 'yyyy-MM-dd'),
-            time: format(start, 'HH:mm'),
-        });
         setIsEditing(true);
     };
 
