@@ -15,7 +15,6 @@ import {
     Calendar as CalendarIcon,
     MoreVertical
 } from 'lucide-react';
-import { useAuthStore } from '../stores/auth.store';
 
 export default function CollectionsPage() {
     const queryClient = useQueryClient();
