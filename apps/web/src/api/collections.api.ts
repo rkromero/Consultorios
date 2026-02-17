@@ -1,4 +1,4 @@
-import api from './index';
+import api from '../lib/axios';
 
 export enum CollectionStatus {
     PENDING = 'PENDING',

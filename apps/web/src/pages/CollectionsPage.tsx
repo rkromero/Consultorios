@@ -19,7 +19,7 @@ import { useAuthStore } from '../stores/auth.store';
 
 export default function CollectionsPage() {
     const queryClient = useQueryClient();
-    const { user } = useAuthStore();
+    // const { user } = useAuthStore(); // Removed unused
 
     const [filters, setFilters] = useState({
         status: undefined as CollectionStatus | undefined,
