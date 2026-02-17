@@ -21,8 +21,7 @@ export class ProfessionalService {
                         user: true
                     }
                 }
-            },
-            orderBy: { active: 'desc' }
+            }
         });
     }
 
