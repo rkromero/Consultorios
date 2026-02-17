@@ -79,6 +79,15 @@ export class AuthService {
     }
 
     async register(data: { email: string; password: string; fullName: string; tenantName: string }) {
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email: data.email }
+        });
+
+        if (existingUser) {
+            throw new Error('El correo electrónico ya está registrado');
+        }
+
         // Transaction to create User + Tenant + Link
         return await prisma.$transaction(async (tx) => {
             const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -91,10 +100,30 @@ export class AuthService {
                 }
             });
 
+            // Generate unique slug
+            const baseSlug = data.tenantName.toLowerCase().trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            let slug = baseSlug || 'org';
+            let count = 0;
+
+            // Check for collision and append number if needed
+            while (true) {
+                const currentSlug = count === 0 ? slug : `${slug}-${count}`;
+                const existing = await tx.tenant.findUnique({ where: { slug: currentSlug } });
+                if (!existing) {
+                    slug = currentSlug;
+                    break;
+                }
+                count++;
+            }
+
             const tenant = await tx.tenant.create({
                 data: {
                     name: data.tenantName,
-                    slug: data.tenantName.toLowerCase().replace(/\s+/g, '-'),
+                    slug: slug,
                 }
             });
 
