@@ -17,6 +17,7 @@ export interface Appointment {
     id: string;
     patientId: string;
     patient?: {
+        id: string;
         firstName: string;
         lastName: string;
         phone?: string;
@@ -26,7 +27,10 @@ export interface Appointment {
         tenantUser: {
             user: { fullName: string }
         };
+        specialty?: { id: string; name: string };
     };
+    siteId: string;
+    site?: { id: string; name: string };
     startTime: string; // ISO
     endTime: string;   // ISO
     type: AppointmentType;

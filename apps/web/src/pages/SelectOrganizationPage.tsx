@@ -10,7 +10,7 @@ export default function SelectOrganizationPage() {
     const handleSelect = async (tenantId: string) => {
         try {
             const res = await api.post('/auth/select-tenant', { tenantId });
-            selectTenant(res.data.token, res.data.tenant);
+            selectTenant(res.data.token, res.data.tenant, res.data.role);
             navigate('/dashboard');
         } catch (error) {
             console.error('Failed to select tenant', error);

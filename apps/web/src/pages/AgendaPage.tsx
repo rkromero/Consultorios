@@ -12,15 +12,22 @@ import {
 import { cn } from '../lib/utils';
 import { useAppointments } from '../hooks/useAppointments';
 import { useAuthStore } from '../stores/auth.store';
-import { AppointmentType } from '../api/appointments.api';
+import { useProfessionals } from '../hooks/useProfessionals';
+import { Appointment, AppointmentType } from '../api/appointments.api';
+import { User as UserIcon } from 'lucide-react';
 
 import AppointmentModal from '../components/AppointmentModal';
+import AppointmentDetailSidebar from '../components/AppointmentDetailSidebar';
 
 export default function AgendaPage() {
     const { selectedSiteId } = useAuthStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<AppointmentType>(AppointmentType.REGULAR);
+    const [selectedProfessionalId, setSelectedProfessionalId] = useState<string>('all');
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+
+    const { data: professionals = [] } = useProfessionals();
 
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
     const weekEnd = addDays(weekStart, 4); // Mon to Fri
@@ -46,7 +53,6 @@ export default function AgendaPage() {
 
     const nextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
     const prevWeek = () => setCurrentDate(subWeeks(currentDate, 1));
-    const goToToday = () => setCurrentDate(new Date());
 
     const openModal = (type: AppointmentType) => {
         setModalType(type);
@@ -56,13 +62,22 @@ export default function AgendaPage() {
     // Group appointments by day and time for easier rendering
     const appointmentsByDay = useMemo(() => {
         const grouped: Record<string, any[]> = {};
-        appointments.forEach(app => {
+        const filtered = selectedProfessionalId === 'all'
+            ? appointments
+            : appointments.filter(a => a.professionalId === selectedProfessionalId);
+
+        filtered.forEach(app => {
             const dayKey = format(parseISO(app.startTime), 'yyyy-MM-dd');
             if (!grouped[dayKey]) grouped[dayKey] = [];
             grouped[dayKey].push(app);
         });
         return grouped;
-    }, [appointments]);
+    }, [appointments, selectedProfessionalId]);
+
+    const selectedAppointment = useMemo(() => {
+        if (!selectedAppointmentId) return null;
+        return appointments.find(a => a.id === selectedAppointmentId) || null;
+    }, [selectedAppointmentId, appointments]);
 
     return (
         <div className="flex flex-col h-full space-y-4">
@@ -81,7 +96,7 @@ export default function AgendaPage() {
                         >
                             <ChevronLeft size={20} />
                         </button>
-                        <div className="bg-white border border-slate-200 px-4 py-1.5 rounded-xl text-sm font-bold text-slate-700 min-w-[200px] text-center shadow-sm">
+                        <div className="bg-white border border-slate-200 px-4 py-1.5 rounded-xl text-sm font-bold text-slate-700 min-w-[140px] text-center shadow-sm">
                             {format(weekStart, "d/M")} - {format(weekEnd, "d/M")}
                         </div>
                         <button
@@ -90,12 +105,20 @@ export default function AgendaPage() {
                         >
                             <ChevronRight size={20} />
                         </button>
-                        <button
-                            onClick={goToToday}
-                            className="ml-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-xl border border-slate-100">
+                        <UserIcon size={14} className="ml-2 text-slate-400" />
+                        <select
+                            value={selectedProfessionalId}
+                            onChange={(e) => setSelectedProfessionalId(e.target.value)}
+                            className="bg-transparent text-[11px] font-bold text-slate-600 uppercase tracking-tight focus:outline-none min-w-[150px] cursor-pointer"
                         >
-                            Hoy
-                        </button>
+                            <option value="all">Todos los Profesionales</option>
+                            {professionals.map(p => (
+                                <option key={p.id} value={p.id}>{p.tenantUser?.user?.fullName}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
@@ -194,24 +217,38 @@ export default function AgendaPage() {
                                             key={`${dayKey}-${time}`}
                                             className="h-20 border-r border-b border-slate-100 last:border-r-0 p-1 group hover:bg-slate-50/50 transition-colors relative"
                                         >
-                                            {timeApps.map(app => {
+                                            {timeApps.map((app, index) => {
                                                 const appStartDate = parseISO(app.startTime);
                                                 const appEndDate = parseISO(app.endTime);
                                                 const durationMin = Math.max(15, (appEndDate.getTime() - appStartDate.getTime()) / 60000);
                                                 const heightPx = (durationMin / 15) * 80 - 8;
 
+                                                const total = timeApps.length;
+                                                const widthPercent = 100 / total;
+                                                const leftPercent = index * widthPercent;
+
+                                                // Calculate top offset if the appointment doesn't start exactly at the slot boundary
+                                                const minutesOffset = appStartDate.getMinutes() % 15;
+                                                const topOffsetPx = (minutesOffset / 15) * 80 + 4;
+
                                                 return (
                                                     <div
                                                         key={app.id}
+                                                        onClick={() => setSelectedAppointmentId(app.id)}
                                                         className={cn(
-                                                            "absolute inset-x-1 top-1 z-40 rounded-xl p-3 shadow-lg hover:shadow-xl transition-all cursor-pointer border-l-4",
+                                                            "absolute z-40 rounded-xl p-3 shadow-lg hover:shadow-xl transition-all cursor-pointer border-l-4",
                                                             app.siteId !== selectedSiteId && selectedSiteId
                                                                 ? "bg-slate-50 border-slate-300 opacity-60 grayscale-[0.5]"
                                                                 : app.type === AppointmentType.REGULAR
                                                                     ? "bg-indigo-50 border-indigo-600 group-hover:bg-indigo-100"
                                                                     : "bg-amber-50 border-amber-500 group-hover:bg-amber-100"
                                                         )}
-                                                        style={{ height: `${heightPx}px` }}
+                                                        style={{
+                                                            height: `${heightPx}px`,
+                                                            width: total > 1 ? `calc(${widthPercent}% - 4px)` : 'calc(100% - 8px)',
+                                                            left: total > 1 ? `calc(${leftPercent}% + 2px)` : '4px',
+                                                            top: `${topOffsetPx}px`
+                                                        }}
                                                     >
                                                         <div className="flex flex-col h-full overflow-hidden">
                                                             <div className="flex items-center justify-between gap-1">
@@ -224,9 +261,14 @@ export default function AgendaPage() {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <span className="text-[9px] text-slate-500 font-bold leading-tight truncate mt-0.5">
-                                                                {app.professional?.tenantUser?.user?.fullName.split(' ')[0]}
-                                                            </span>
+                                                            <div className="flex items-center justify-between mt-0.5">
+                                                                <span className="text-[9px] text-slate-500 font-bold leading-tight truncate">
+                                                                    {app.professional?.tenantUser?.user?.fullName.split(' ')[0]}
+                                                                </span>
+                                                                <span className="text-[8px] text-slate-400 font-bold">
+                                                                    {format(appStartDate, 'HH:mm')}
+                                                                </span>
+                                                            </div>
                                                             <div className="mt-auto flex items-center justify-between">
                                                                 <div className={cn(
                                                                     "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
@@ -256,6 +298,13 @@ export default function AgendaPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 type={modalType}
+            />
+
+            {/* Appointment Detail Sidebar */}
+            <AppointmentDetailSidebar
+                appointment={selectedAppointment}
+                isOpen={!!selectedAppointmentId}
+                onClose={() => setSelectedAppointmentId(null)}
             />
         </div >
     );

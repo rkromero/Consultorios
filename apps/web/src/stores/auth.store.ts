@@ -16,11 +16,12 @@ interface AuthState {
     token: string | null;
     user: User | null;
     tenant: Tenant | null; // Selected tenant
+    role: string | null; // User role in current tenant
     selectedSiteId: string | null; // Selected site
     availableTenants: Tenant[]; // List of tenants user belongs to
 
     setLogin: (token: string, user: User, tenants: Tenant[]) => void;
-    selectTenant: (token: string, tenant: Tenant) => void;
+    selectTenant: (token: string, tenant: Tenant, role: string) => void;
     setSelectedSiteId: (siteId: string) => void;
     logout: () => void;
 }
@@ -31,13 +32,14 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             user: null,
             tenant: null,
+            role: null,
             selectedSiteId: null,
             availableTenants: [],
 
             setLogin: (token, user, tenants) => set({ token, user, availableTenants: tenants }),
-            selectTenant: (token, tenant) => set({ token, tenant, selectedSiteId: null }), // Reset site when changing tenant
+            selectTenant: (token, tenant, role) => set({ token, tenant, role, selectedSiteId: null }),
             setSelectedSiteId: (selectedSiteId) => set({ selectedSiteId }),
-            logout: () => set({ token: null, user: null, tenant: null, selectedSiteId: null, availableTenants: [] }),
+            logout: () => set({ token: null, user: null, tenant: null, role: null, selectedSiteId: null, availableTenants: [] }),
         }),
         {
             name: 'auth-storage',
