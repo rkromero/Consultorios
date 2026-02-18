@@ -34,12 +34,9 @@ COPY --from=builder /app/packages/db ./packages/db
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/web/dist ./apps/web/dist
 COPY --from=builder /app/packages/db/prisma ./packages/db/prisma
-COPY --from=builder /app/start.sh ./start.sh
-
-RUN chmod +x ./start.sh
 
 # Serve Web from API
 ENV PORT=3000
 EXPOSE 3000
 
-CMD ["./start.sh"]
+CMD ["node", "apps/api/dist/index.js"]

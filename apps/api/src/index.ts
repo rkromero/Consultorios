@@ -3,9 +3,21 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
+import { execSync } from 'child_process';
 import { config } from './config';
 
-// Deployment trigger: 2026-02-17
+// Apply database schema changes before starting
+try {
+    console.log('[startup] Running prisma db push...');
+    execSync('npx prisma db push --schema=./packages/db/prisma/schema.prisma --skip-generate --accept-data-loss', {
+        stdio: 'inherit',
+        timeout: 30000
+    });
+    console.log('[startup] Database schema synced successfully');
+} catch (error) {
+    console.error('[startup] prisma db push failed:', error);
+}
+
 const app = express();
 const port = config.PORT;
 
