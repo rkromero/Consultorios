@@ -12,7 +12,6 @@ import {
 import type { LandingSection, LandingContact, LandingTheme, LandingSeo } from '../../api/landing.api';
 import { cn } from '../../lib/utils';
 
-const LANDING_DOMAIN = 'turnio.app';
 
 function SectionCard({ title, icon: Icon, children, defaultOpen = true }: {
     title: string; icon: any; children: React.ReactNode; defaultOpen?: boolean;
@@ -87,16 +86,14 @@ export default function LandingConfigPage() {
         setSlugDraft(landing.slug || '');
     }, [landing]);
 
-    const publicUrl = slug ? `https://${slug}.${LANDING_DOMAIN}` : '';
-    const previewUrl = slug ? `${window.location.origin}/p/${slug}` : '';
+    const publicUrl = slug ? `${window.location.origin}/p/${slug}` : '';
 
     const handleCopy = useCallback(() => {
-        const url = previewUrl || publicUrl;
-        if (!url) return;
-        navigator.clipboard.writeText(url);
+        if (!publicUrl) return;
+        navigator.clipboard.writeText(publicUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    }, [publicUrl, previewUrl]);
+    }, [publicUrl]);
 
     const handleToggle = () => {
         setError(null);
@@ -245,7 +242,7 @@ export default function LandingConfigPage() {
                 {/* Slug + URL */}
                 <div className="bg-slate-50 rounded-xl p-4 space-y-3">
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400 font-bold">https://</span>
+                        <span className="text-xs text-slate-400 font-bold shrink-0">{window.location.origin}/p/</span>
                         {slugEditing ? (
                             <div className="flex items-center gap-2 flex-1">
                                 <input
@@ -255,7 +252,6 @@ export default function LandingConfigPage() {
                                     placeholder="mi-clinica"
                                     maxLength={30}
                                 />
-                                <span className="text-xs text-slate-400 font-bold">.{LANDING_DOMAIN}</span>
                                 <button
                                     onClick={handleSaveSlug}
                                     disabled={slugMutation.isPending || !slugDraft}
@@ -270,7 +266,6 @@ export default function LandingConfigPage() {
                         ) : (
                             <div className="flex items-center gap-2 flex-1">
                                 <span className="text-sm font-bold text-indigo-700">{slug || 'sin-configurar'}</span>
-                                <span className="text-xs text-slate-400 font-bold">.{LANDING_DOMAIN}</span>
                                 <button onClick={() => setSlugEditing(true)} className="text-xs text-indigo-500 hover:text-indigo-700 font-bold ml-2">
                                     Editar
                                 </button>
@@ -283,18 +278,10 @@ export default function LandingConfigPage() {
                                 {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
                                 {copied ? 'Copiado' : 'Copiar URL'}
                             </button>
-                            {previewUrl && (
-                                <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-                                    <ExternalLink size={12} />
-                                    Vista previa
-                                </a>
-                            )}
-                            {publicUrl && (
-                                <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors">
-                                    <Globe size={12} />
-                                    Subdominio
-                                </a>
-                            )}
+                            <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
+                                <ExternalLink size={12} />
+                                Abrir landing
+                            </a>
                         </div>
                     )}
                 </div>
