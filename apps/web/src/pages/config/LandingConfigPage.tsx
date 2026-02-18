@@ -88,13 +88,15 @@ export default function LandingConfigPage() {
     }, [landing]);
 
     const publicUrl = slug ? `https://${slug}.${LANDING_DOMAIN}` : '';
+    const previewUrl = slug ? `${window.location.origin}/p/${slug}` : '';
 
     const handleCopy = useCallback(() => {
-        if (!publicUrl) return;
-        navigator.clipboard.writeText(publicUrl);
+        const url = previewUrl || publicUrl;
+        if (!url) return;
+        navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    }, [publicUrl]);
+    }, [publicUrl, previewUrl]);
 
     const handleToggle = () => {
         setError(null);
@@ -275,16 +277,24 @@ export default function LandingConfigPage() {
                             </div>
                         )}
                     </div>
-                    {publicUrl && (
-                        <div className="flex items-center gap-2">
+                    {slug && (
+                        <div className="flex items-center gap-2 flex-wrap">
                             <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
                                 {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
                                 {copied ? 'Copiado' : 'Copiar URL'}
                             </button>
-                            <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
-                                <ExternalLink size={12} />
-                                Abrir
-                            </a>
+                            {previewUrl && (
+                                <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors">
+                                    <ExternalLink size={12} />
+                                    Vista previa
+                                </a>
+                            )}
+                            {publicUrl && (
+                                <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors">
+                                    <Globe size={12} />
+                                    Subdominio
+                                </a>
+                            )}
                         </div>
                     )}
                 </div>

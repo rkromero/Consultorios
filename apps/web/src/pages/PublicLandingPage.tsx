@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { usePublicLanding } from '../hooks/useLanding';
 import { Loader2, Phone, Mail, MapPin, MessageCircle, Instagram, ExternalLink } from 'lucide-react';
 import type { LandingSection, LandingContact, LandingTheme } from '../api/landing.api';
@@ -207,6 +208,12 @@ function LoadingPage() {
             <Loader2 className="animate-spin text-indigo-500" size={40} />
         </div>
     );
+}
+
+export function PublicLandingByPath() {
+    const { slug } = useParams<{ slug: string }>();
+    if (!slug) return <NotFoundPage />;
+    return <PublicLandingPage slug={slug} />;
 }
 
 export default function PublicLandingPage({ slug }: { slug: string }) {

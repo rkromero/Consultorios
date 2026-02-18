@@ -18,7 +18,7 @@ import PatientDetailsPage from './pages/PatientDetailsPage';
 import InvoicesPage from './pages/InvoicesPage';
 import CollectionsPage from './pages/CollectionsPage';
 import DashboardPage from './pages/DashboardPage';
-import PublicLandingPage, { useSubdomainSlug } from './pages/PublicLandingPage';
+import PublicLandingPage, { useSubdomainSlug, PublicLandingByPath } from './pages/PublicLandingPage';
 import { useAuthStore } from './stores/auth.store';
 
 const queryClient = new QueryClient();
@@ -84,6 +84,7 @@ function App() {
                         </Route>
                     </Route>
 
+                    <Route path="/p/:slug" element={<PublicLandingByPath />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>
