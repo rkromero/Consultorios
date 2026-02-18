@@ -18,6 +18,11 @@ export interface LandingContact {
 export interface LandingTheme {
     primaryColor: string;
     accentColor: string;
+    badgeText?: string | null;
+    accentWord?: string | null;
+    secondaryCtaText?: string | null;
+    secondaryCtaLink?: string | null;
+    loginUrl?: string | null;
 }
 
 export interface LandingSeo {

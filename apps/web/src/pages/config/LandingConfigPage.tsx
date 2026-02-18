@@ -377,24 +377,44 @@ export default function LandingConfigPage() {
             </SectionCard>
 
             {/* ─── CTA Principal ─── */}
-            <SectionCard title="Botón Principal (CTA)" icon={Sparkles}>
+            <SectionCard title="Botones de Acción" icon={Sparkles}>
+                <p className="text-xs text-slate-400 font-medium -mt-2 mb-3">Botón principal y secundario que aparecen en el hero</p>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <FieldLabel label="Texto del Botón" />
+                        <FieldLabel label="Texto Botón Principal" />
                         <input
                             value={ctaText}
                             onChange={e => setCtaText(e.target.value)}
-                            placeholder="Reservar turno"
+                            placeholder="Solicitar Turno"
                             className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             maxLength={50}
                         />
                     </div>
                     <div>
-                        <FieldLabel label="Link del Botón" hint="URL completa o teléfono con wa.me" />
+                        <FieldLabel label="Link Botón Principal" hint="URL o wa.me/..." />
                         <input
                             value={ctaLink}
                             onChange={e => setCtaLink(e.target.value)}
                             placeholder="https://wa.me/5491112345678"
+                            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        />
+                    </div>
+                    <div>
+                        <FieldLabel label="Texto Botón Secundario" hint="Ej: Especialidades, Ver Servicios" />
+                        <input
+                            value={theme.secondaryCtaText || ''}
+                            onChange={e => setTheme(p => ({ ...p, secondaryCtaText: e.target.value }))}
+                            placeholder="Especialidades"
+                            className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            maxLength={50}
+                        />
+                    </div>
+                    <div>
+                        <FieldLabel label="Link Botón Secundario" hint="Usá #seccion-0 para anclar a la primera sección" />
+                        <input
+                            value={theme.secondaryCtaLink || ''}
+                            onChange={e => setTheme(p => ({ ...p, secondaryCtaLink: e.target.value }))}
+                            placeholder="#seccion-0"
                             className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         />
                     </div>
@@ -503,8 +523,8 @@ export default function LandingConfigPage() {
                 </div>
             </SectionCard>
 
-            {/* ─── Tema ─── */}
-            <SectionCard title="Colores del Tema" icon={Palette} defaultOpen={false}>
+            {/* ─── Tema y Personalización ─── */}
+            <SectionCard title="Tema y Personalización" icon={Palette} defaultOpen={false}>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <FieldLabel label="Color Primario" />
@@ -516,7 +536,7 @@ export default function LandingConfigPage() {
                         </div>
                     </div>
                     <div>
-                        <FieldLabel label="Color Acento" />
+                        <FieldLabel label="Color Acento" hint="Se aplica a la palabra resaltada del título" />
                         <div className="flex items-center gap-3">
                             <input type="color" value={theme.accentColor} onChange={e => setTheme(p => ({ ...p, accentColor: e.target.value }))}
                                 className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer" />
@@ -524,6 +544,23 @@ export default function LandingConfigPage() {
                                 className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                         </div>
                     </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <FieldLabel label="Etiqueta Hero" hint='Ej: "Centro Terapéutico", aparece arriba del título' />
+                        <input value={theme.badgeText || ''} onChange={e => setTheme(p => ({ ...p, badgeText: e.target.value }))}
+                            placeholder="Centro Terapéutico" className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" maxLength={40} />
+                    </div>
+                    <div>
+                        <FieldLabel label="Palabra con Acento" hint="Palabra del título que se resalta con el color acento" />
+                        <input value={theme.accentWord || ''} onChange={e => setTheme(p => ({ ...p, accentWord: e.target.value }))}
+                            placeholder="bienestar" className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" maxLength={30} />
+                    </div>
+                </div>
+                <div>
+                    <FieldLabel label="Link Ingresar" hint='Muestra un link "INGRESAR" en el navbar (ej: URL de tu sistema de turnos)' />
+                    <input value={theme.loginUrl || ''} onChange={e => setTheme(p => ({ ...p, loginUrl: e.target.value }))}
+                        placeholder="https://mi-sistema.com/login" className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
             </SectionCard>
 
