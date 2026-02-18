@@ -24,7 +24,7 @@ const port = config.PORT;
 
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '5mb' }));
 
 import authRoutes from './routes/auth.routes';
 import siteRoutes from './routes/sites.routes';
@@ -60,6 +60,14 @@ app.use('/api/invoices', invoiceRoutes);
 import tenantRoutes from './routes/tenant.routes';
 app.use('/api/tenant', tenantRoutes);
 
+import landingRoutes from './routes/landing.routes';
+import publicRoutes from './routes/public.routes';
+import rateLimit from 'express-rate-limit';
+
+const publicLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, standardHeaders: true, legacyHeaders: false });
+app.use('/api/landing', landingRoutes);
+app.use('/api/public', publicLimiter, publicRoutes);
+
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../web/dist')));
 
@@ -70,9 +78,14 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Subdomain SEO middleware: injects meta tags for public landing pages
+import { subdomainSeoMiddleware } from './middlewares/subdomain.middleware';
+const indexPath = path.join(__dirname, '../../web/dist/index.html');
+app.use(subdomainSeoMiddleware(indexPath));
+
 // Catch-all handler for React Router (must be after all API routes)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../web/dist/index.html'));
+    res.sendFile(indexPath);
 });
 
 if (!process.env.DATABASE_URL) {

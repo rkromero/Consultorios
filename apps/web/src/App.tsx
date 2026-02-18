@@ -1,4 +1,3 @@
-// Deployment Track: 2024-02-17 UI Redesign Final
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LandingPage from './pages/LandingPage';
@@ -12,12 +11,14 @@ import SpecialtiesPage from './pages/config/SpecialtiesPage';
 import ProfessionalsPage from './pages/config/ProfessionalsPage';
 import UsersPage from './pages/config/UsersPage';
 import OrganizationPage from './pages/config/OrganizationPage';
+import LandingConfigPage from './pages/config/LandingConfigPage';
 import PatientsPage from './pages/PatientsPage';
 import AgendaPage from './pages/AgendaPage';
 import PatientDetailsPage from './pages/PatientDetailsPage';
 import InvoicesPage from './pages/InvoicesPage';
 import CollectionsPage from './pages/CollectionsPage';
 import DashboardPage from './pages/DashboardPage';
+import PublicLandingPage, { useSubdomainSlug } from './pages/PublicLandingPage';
 import { useAuthStore } from './stores/auth.store';
 
 const queryClient = new QueryClient();
@@ -38,6 +39,16 @@ const AdminRoute = ({ children }: { children: JSX.Element }) => {
 };
 
 function App() {
+    const subdomainSlug = useSubdomainSlug();
+
+    if (subdomainSlug) {
+        return (
+            <QueryClientProvider client={queryClient}>
+                <PublicLandingPage slug={subdomainSlug} />
+            </QueryClientProvider>
+        );
+    }
+
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
@@ -69,6 +80,7 @@ function App() {
                             <Route path="consultorios" element={<BoxesPage />} />
                             <Route path="especialidades" element={<SpecialtiesPage />} />
                             <Route path="usuarios" element={<UsersPage />} />
+                            <Route path="landing" element={<LandingConfigPage />} />
                         </Route>
                     </Route>
 

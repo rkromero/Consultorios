@@ -41,6 +41,7 @@ model Tenant {
   invoices      Invoice[]
   priceVersions AppointmentPriceVersion[]
   collections   AppointmentCollection[]
+  landingPage   LandingPage?
   
   config        Json? 
 }
@@ -268,4 +269,31 @@ model AppointmentCollection {
   notes             String?
   updatedAt         DateTime          @default(now()) @updatedAt
   updatedByUserId   String?
+}
+
+model LandingPage {
+  id               String   @id @default(uuid())
+  tenantId         String   @unique
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+
+  enabled          Boolean  @default(false)
+  slug             String   @unique
+
+  headline         String?
+  subheadline      String?
+  heroImageUrl     String?
+  logoUrl          String?
+
+  primaryCtaText   String?
+  primaryCtaLink   String?
+
+  sections         Json?
+  contact          Json?
+  theme            Json?
+  seo              Json?
+
+  poweredByEnabled Boolean  @default(true)
+
+  updatedAt        DateTime @updatedAt
+  updatedByUserId  String?
 }

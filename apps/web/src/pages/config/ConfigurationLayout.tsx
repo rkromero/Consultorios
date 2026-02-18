@@ -9,6 +9,7 @@ export default function ConfigurationLayout() {
         { to: "consultorios", label: "Consultorios" },
         { to: "especialidades", label: "Especialidades" },
         { to: "usuarios", label: "Usuarios" },
+        { to: "landing", label: "Landing" },
     ];
 
     return (
