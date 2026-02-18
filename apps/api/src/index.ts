@@ -8,8 +8,9 @@ import { config } from './config';
 
 // Apply database schema changes before starting
 try {
-    console.log('[startup] Running prisma db push...');
-    execSync('npx prisma db push --schema=./packages/db/prisma/schema.prisma --skip-generate --accept-data-loss', {
+    const schemaPath = path.resolve(__dirname, '../../../packages/db/prisma/schema.prisma');
+    console.log('[startup] Running prisma db push with schema:', schemaPath);
+    execSync(`npx prisma db push --schema=${schemaPath} --skip-generate --accept-data-loss`, {
         stdio: 'inherit',
         timeout: 30000
     });
